@@ -1,0 +1,61 @@
+#!/usr/bin/env node
+
+var http = require('http'),
+    spawn = require('child_process').spawn,
+    exec = require('child_process').exec,
+    fs = require('fs'),
+    tmpfilePath;
+
+http.createServer(function (req, res) {
+  switch(req.method)
+  {
+    case 'GET':
+      exec('mktemp -t instant-markdown',
+        function(error, stdout, stderr){
+          tmpfilePath = stdout + '.html';
+          fs.writeFileSync(tmpfilePath, '<html></html>');
+          exec('open -a safari -g ' + tmpfilePath,
+            function(error, stdout, stderr){
+              
+            });
+        });
+      break;
+
+    case 'DELETE':
+      socketio.send('killing js', function(){
+          fs.rmdirSync(tmpfilePath);
+          process.exit();
+      });
+      break;
+
+    case 'PUT':
+      var gfm = spawn('gfm');
+      gfm.stdout.on('data', function(data) {
+        socketio.write(data);
+      });
+      gfm.on('exit',function(ecode){
+        
+      });
+      break;
+
+    default:
+  }
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.end('Hello World\n');
+}).listen(8090, "localhost");
+
+
+process.stderr.on('data',function(err) {
+	process.stdout.write('ERR: '+err);
+})
+
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+process.stdin.on('data', function (chunk) {
+	gfm.stdin.write(chunk);
+	gfm.stdin.end();
+});
+
+// var mdFilePath = process.argv[2];
+// if (mdFilePath){  }
