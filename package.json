@@ -5,10 +5,12 @@
 	"version": "0.0.1",
 	"engine" : "node",
 	"main": "instant-markdown-d",
+  "preferGlobal" : "true",
 	"bin" : { 
 		"instant-markdown-d" : "./instant-markdown-d"
 	},
 	"dependencies": {
-    "socket.io": ""
+    "socket.io": "",
+    "docter": "https://suan@github.com/suan/Docter/tarball/master"
   }
 }
