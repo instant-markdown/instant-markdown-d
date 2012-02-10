@@ -1,0 +1,18 @@
+<html>
+<head>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io.connect('http://localhost:8090/');
+    socket.on('connect', function () {
+      socket.on('newContent', function(newHTML) {
+        document.body.innerHTML = newHTML;
+      });
+      socket.on('die', function(newHTML) {
+        window.open('', '_self', '');window.close();
+      });
+    });
+  </script>
+</head>
+<body>
+</body>
+</html>

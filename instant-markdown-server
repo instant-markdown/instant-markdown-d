@@ -1,61 +1,74 @@
 #!/usr/bin/env node
 
-var http = require('http'),
+var server = require('http').createServer(httpHandler),
     spawn = require('child_process').spawn,
     exec = require('child_process').exec,
+    io = require('socket.io').listen(server),
     fs = require('fs'),
-    tmpfilePath;
+    server,
+    socket;
 
-http.createServer(function (req, res) {
+server.listen(8090);
+
+function httpHandler(req, res) {
+  process.stdout.write(req.method + "\n");
   switch(req.method)
   {
     case 'GET':
-      exec('mktemp -t instant-markdown',
+      fs.readFile(__dirname + '/instant-markdown.html', function(err, data){
+        res.writeHead(200);
+        res.end(data);
+      });
+      break;
+
+    case 'HEAD':
+      res.writeHead(200);
+      res.end();
+      exec('open -g http://localhost:8090',
         function(error, stdout, stderr){
-          tmpfilePath = stdout + '.html';
-          fs.writeFileSync(tmpfilePath, '<html></html>');
-          exec('open -a safari -g ' + tmpfilePath,
-            function(error, stdout, stderr){
-              
-            });
-        });
+        
+      });
       break;
 
     case 'DELETE':
-      socketio.send('killing js', function(){
-          fs.rmdirSync(tmpfilePath);
-          process.exit();
-      });
+      socket.emit('die');
+      process.exit();
       break;
 
     case 'PUT':
       var gfm = spawn('gfm');
       gfm.stdout.on('data', function(data) {
-        socketio.write(data);
+        io.write(data);
       });
-      gfm.on('exit',function(ecode){
-        
-      });
+      // gfm.on('exit',function(ecode){
+        // 
+      // });
       break;
 
     default:
   }
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.end('Hello World\n');
-}).listen(8090, "localhost");
+}
 
-
-process.stderr.on('data',function(err) {
-	process.stdout.write('ERR: '+err);
-})
-
-process.stdin.resume();
-process.stdin.setEncoding('utf8');
-
-process.stdin.on('data', function (chunk) {
-	gfm.stdin.write(chunk);
-	gfm.stdin.end();
+io.sockets.on('connection', function(sock){
+  socket = sock;
+  process.stdout.write('connection established!');
 });
 
-// var mdFilePath = process.argv[2];
-// if (mdFilePath){  }
+
+
+
+
+
+
+
+// process.stderr.on('data',function(err) {
+	// process.stdout.write('ERR: '+err);
+// })
+
+// process.stdin.resume();
+// process.stdin.setEncoding('utf8');
+
+// process.stdin.on('data', function (chunk) {
+	// gfm.stdin.write(chunk);
+	// gfm.stdin.end();
+// });
