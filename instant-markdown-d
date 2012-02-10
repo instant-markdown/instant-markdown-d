@@ -11,7 +11,7 @@ var server = require('http').createServer(httpHandler),
 server.listen(8090);
 
 function httpHandler(req, res) {
-  process.stdout.write(req.method + "\n");
+  // process.stdout.write(req.method + "\n");
   switch(req.method)
   {
     case 'GET':
@@ -21,14 +21,13 @@ function httpHandler(req, res) {
       });
       break;
 
-    case 'HEAD':
-      res.writeHead(200);
-      res.end();
-      exec('open -g http://localhost:8090',
-        function(error, stdout, stderr){
-        
-      });
-      break;
+    // case 'HEAD':
+      // res.writeHead(200);
+      // res.end();
+      // exec('open -g http://localhost:8090', function(error, stdout, stderr){
+        // http.request({port: 8090})
+      // });
+      // break;
 
     case 'DELETE':
       socket.emit('die');
@@ -36,39 +35,50 @@ function httpHandler(req, res) {
       break;
 
     case 'PUT':
+      var newHTML = '';
       var gfm = spawn('gfm');
-      gfm.stdout.on('data', function(data) {
-        io.write(data);
+      req.on('data', function(chunk){
+        gfm.stdin.write(chunk);
       });
-      // gfm.on('exit',function(ecode){
-        // 
-      // });
+      req.on('end', function(){
+        gfm.stdin.end();
+        res.writeHead(200);
+        res.end();
+      });
+      gfm.stdout.on('data', function(data) {
+        newHTML += data;
+      });
+      gfm.on('exit',function(ecode){
+        socket.emit('newContent', newHTML);
+      });
       break;
 
     default:
   }
 }
 
+io.set('log level', 1);
 io.sockets.on('connection', function(sock){
   socket = sock;
   process.stdout.write('connection established!');
+
+  var newHTML = '';
+  var gfm = spawn('gfm');
+  process.stdin.on('data', function(chunk){
+    gfm.stdin.write(chunk);
+  });
+  process.stdin.on('end', function(){
+    gfm.stdin.end();
+  });
+  gfm.stdout.on('data', function(data) {
+    newHTML += data;
+  });
+  gfm.on('exit',function(ecode){
+    socket.emit('newContent', newHTML);
+  });
+  process.stdin.resume();
 });
 
 
-
-
-
-
-
-
-// process.stderr.on('data',function(err) {
-	// process.stdout.write('ERR: '+err);
-// })
-
-// process.stdin.resume();
-// process.stdin.setEncoding('utf8');
-
-// process.stdin.on('data', function (chunk) {
-	// gfm.stdin.write(chunk);
-	// gfm.stdin.end();
-// });
+exec('open -g http://localhost:8090', function(error, stdout, stderr){
+});
