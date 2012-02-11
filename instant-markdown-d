@@ -80,5 +80,9 @@ io.sockets.on('connection', function(sock){
 });
 
 
-exec('open -g http://localhost:8090', function(error, stdout, stderr){
-});
+if (process.platform.toLowerCase().indexOf('darwin') >= 0){
+  exec('open -g http://localhost:8090', function(error, stdout, stderr){});
+}
+else {  // assume unix/linux
+  exec('xdg-open http://localhost:8090', function(error, stdout, stderr){});
+}
