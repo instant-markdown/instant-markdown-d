@@ -12,13 +12,12 @@ var server = require('http').createServer(httpHandler),
 server.listen(8090);
 
 function httpHandler(req, res) {
-  // process.stdout.write(req.method + "\n");
   switch(req.method)
   {
     case 'GET':
       var filePath = __dirname + req.url;
       if (filePath == __dirname + '/'){
-        filePath = __dirname + '/instant-markdown.html';
+        filePath = __dirname + '/index.html';
       }
       var extname = path.extname(filePath);
       var contentType = 'text/html';
