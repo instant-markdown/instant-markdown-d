@@ -5,6 +5,7 @@ var server = require('http').createServer(httpHandler),
     exec = require('child_process').exec,
     io = require('socket.io').listen(server),
     fs = require('fs'),
+    path = require('path'),
     server,
     socket;
 
@@ -15,9 +16,38 @@ function httpHandler(req, res) {
   switch(req.method)
   {
     case 'GET':
-      fs.readFile(__dirname + '/instant-markdown.html', function(err, data){
-        res.writeHead(200);
-        res.end(data);
+      var filePath = __dirname + req.url;
+      if (filePath == __dirname + '/'){
+        filePath = __dirname + '/instant-markdown.html';
+      }
+      var extname = path.extname(filePath);
+      var contentType = 'text/html';
+      switch (extname) {
+          case '.js':
+              contentType = 'text/javascript';
+              break;
+          case '.css':
+              contentType = 'text/css';
+              break;
+      }
+       
+      path.exists(filePath, function(exists) {
+          if (exists) {
+              fs.readFile(filePath, function(error, content) {
+                  if (error) {
+                      res.writeHead(500);
+                      res.end();
+                  }
+                  else {
+                      res.writeHead(200, { 'Content-Type': contentType });
+                      res.end(content, 'utf-8');
+                  }
+              });
+          }
+          else {
+              res.writeHead(404);
+              res.end();
+          }
       });
       break;
 
