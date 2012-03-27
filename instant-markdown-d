@@ -66,7 +66,7 @@ function httpHandler(req, res) {
 
     case 'PUT':
       var newHTML = '';
-      var gfm = spawn(__dirname + '/node_modules/docter/bin/github-flavored-markdown.rb');
+      var gfm = spawn(__dirname + '/node_modules/docter/bin/github-flavored-markdown.rb', ['--unstyled']);
       req.on('data', function(chunk){
         gfm.stdin.write(chunk);
       });
@@ -93,7 +93,7 @@ io.sockets.on('connection', function(sock){
   process.stdout.write('connection established!');
 
   var newHTML = '';
-  var gfm = spawn(__dirname + '/node_modules/docter/bin/github-flavored-markdown.rb');
+  var gfm = spawn(__dirname + '/node_modules/docter/bin/github-flavored-markdown.rb', ['--unstyled']);
   process.stdin.on('data', function(chunk){
     gfm.stdin.write(chunk);
   });
