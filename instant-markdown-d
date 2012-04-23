@@ -53,7 +53,7 @@ function httpHandler(req, res) {
     // case 'HEAD':
       // res.writeHead(200);
       // res.end();
-      // exec('open -g http://localhost:8090', function(error, stdout, stderr){
+      // exec('open -Fg http://localhost:8090', function(error, stdout, stderr){
         // http.request({port: 8090})
       // });
       // break;
@@ -110,7 +110,7 @@ io.sockets.on('connection', function(sock){
 
 
 if (process.platform.toLowerCase().indexOf('darwin') >= 0){
-  exec('open -g http://localhost:8090', function(error, stdout, stderr){});
+  exec('open -Fg http://localhost:8090', function(error, stdout, stderr){});
 }
 else {  // assume unix/linux
   exec('xdg-open http://localhost:8090', function(error, stdout, stderr){});
