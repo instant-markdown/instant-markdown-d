@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 require 'rubygems'
 require 'redcarpet'
 require 'pathname'
@@ -65,3 +66,5 @@ class Docter
     # a
   end
 end
+
+puts Docter.new(:unstyled).from_markdown(STDIN.read)

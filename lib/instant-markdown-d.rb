@@ -1,14 +1,15 @@
-require "instant-markdown-d/version"
 require 'rubygems'
+require "instant-markdown-d/version"
 require 'sinatra'
 # require 'sinatra-websocket'
 require 'em-websocket'
 require 'docter'
+require 'thread'
 # require 'redcarpet'
 # require 'pygments.rb'
 # require '/Users/syeo/Projects/process_pool/lib/process_pool'
 
-# require 'quick-debug'
+require 'quick-debug'
 
 $socket = nil
 EventMachine.run do
@@ -32,7 +33,9 @@ module InstantMarkdown
     PORT = 8090
     DOCTER = Docter.new :unstyled
     $mutalisk = Mutex.new
-    $counter = 0
+    # $counter = 0
+    $to_process = Queue.new
+    $free_procs = 4
     $latest_markdown = ''
     # @@socket = nil
 
@@ -48,10 +51,11 @@ module InstantMarkdown
       # begin
       # new_html = Thread.exclusive{ Docter.new(:unstyled).from_markdown(request.body.read) }
       $mutalisk.synchronize do
-        # $counter += 1
+        $counter += 1
         $latest_markdown = request.body.read
       end
-      EventMachine.next_tick{ InstantMarkdown.update_page }
+      D.bg(:in){'$counter'}
+      InstantMarkdown.update_page
       # rescue Exception => e
       # new_html = request.body.read
       # D.bg(:in){'$socket'}
@@ -83,10 +87,31 @@ module InstantMarkdown
   end
 
   def self.update_page
-    markdown = ''
-    $mutalisk.synchronize{ markdown = $latest_markdown.clone }
-    new_html = Docter.new(:unstyled).from_markdown(markdown)
-    $socket.send new_html
+    if not $to_process.empty?
+      if $free_procs > 0
+        # reduce queue to the number of processes available
+        if $to_process.size > $free_procs
+          num_to_discard = $to_process.size - $free_procs
+          num_to_discard.times{ $to_process.pop }
+        end
+        
+        $to_process.size.times do
+          EM.defer(proc{ |new_html| $socket.send new_html }) do
+            html = nil
+            IO.popen($converter_command) do |command|
+              command << `#{$to_process.pop}`
+              command.close_write
+              html = command.read
+            end
+            html
+          end
+          $free_procs -= 1
+        end
+      else
+        ($to_process.size - 1).times{ $to_process.pop }
+        EM.add_timer(1){ update_page }
+      end   # if free_procs > 0
+    end   # if not $to_process.empty?
   end
 
   EventMachine::WebSocket.start(:host => "0.0.0.0", :port => 8091) do |ws|
