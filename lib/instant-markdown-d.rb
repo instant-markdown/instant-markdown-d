@@ -96,7 +96,7 @@ module InstantMarkdown
         end
         
         $to_process.size.times do
-          EM.defer(proc{ |new_html| $socket.send new_html }) do
+          EM.defer(proc{ |new_html| $free_procs += 1; $socket.send new_html }) do
             html = nil
             IO.popen($converter_command) do |command|
               command << `#{$to_process.pop}`
