@@ -66,10 +66,13 @@ function httpHandler(req, res) {
     case 'PUT':
       var newHTML = '';
       var gfm = spawn(__dirname + '/node_modules/docter/bin/github-flavored-markdown.rb', ['--unstyled']);
+      var input_encoded = '';
       req.on('data', function(chunk){
-        gfm.stdin.write(chunk);
+        input_encoded += chunk;
       });
       req.on('end', function(){
+        input_decoded = new Buffer(input_encoded, 'base64').toString('utf8');
+        gfm.stdin.write(input_decoded);
         gfm.stdin.end();
         res.writeHead(200);
         res.end();
@@ -93,10 +96,13 @@ io.sockets.on('connection', function(sock){
 
   var newHTML = '';
   var gfm = spawn(__dirname + '/node_modules/docter/bin/github-flavored-markdown.rb', ['--unstyled']);
+  var input_encoded = '';
   process.stdin.on('data', function(chunk){
-    gfm.stdin.write(chunk);
+    input_encoded += chunk;
   });
   process.stdin.on('end', function(){
+    input_decoded = new Buffer(input_encoded, 'base64').toString('utf8');
+    gfm.stdin.write(input_decoded);
     gfm.stdin.end();
   });
   gfm.stdout.on('data', function(data) {
