@@ -4,8 +4,7 @@ var server = require('http').createServer(httpHandler),
     spawn = require('child_process').spawn,
     exec = require('child_process').exec,
     io = require('socket.io').listen(server),
-    fs = require('fs'),
-    path = require('path'),
+    send = require('send'),
     server,
     socket;
 
@@ -15,39 +14,20 @@ function httpHandler(req, res) {
   switch(req.method)
   {
     case 'GET':
-      var filePath = __dirname + req.url;
-      if (filePath == __dirname + '/'){
-        filePath = __dirname + '/index.html';
+      // Example: /my-repo/raw/master/sub-dir/some.png
+      var githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
+      if (githubUrl) {
+         // Serve the file out of the current working directory
+        send(req, githubUrl[1])
+         .root(process.cwd())
+         .pipe(res);
+        return;
       }
-      var extname = path.extname(filePath);
-      var contentType = 'text/html';
-      switch (extname) {
-          case '.js':
-              contentType = 'text/javascript';
-              break;
-          case '.css':
-              contentType = 'text/css';
-              break;
-      }
-       
-      path.exists(filePath, function(exists) {
-          if (exists) {
-              fs.readFile(filePath, function(error, content) {
-                  if (error) {
-                      res.writeHead(500);
-                      res.end();
-                  }
-                  else {
-                      res.writeHead(200, { 'Content-Type': contentType });
-                      res.end(content, 'utf-8');
-                  }
-              });
-          }
-          else {
-              res.writeHead(404);
-              res.end();
-          }
-      });
+
+      // Otherwise serve the file from the directory this module is in
+      send(req, req.url)
+        .root(__dirname)
+        .pipe(res);
       break;
 
     // case 'HEAD':
