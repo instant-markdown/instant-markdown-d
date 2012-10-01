@@ -5,14 +5,14 @@ instant-markdown-d is a small Node.js server that enables instant compilation an
 Installation
 ------------
 - `[sudo] gem install redcarpet pygments.rb`
-- `[sudo] npm -g install instant-markdown-d`
+- `[sudo] npm install -g --from-git https://github.com/leifdenby/instant-markdown-d`
 
 REST API
 --------
-| Action           | HTTP Method | Request URL               | Request Body |
-|---------------------|-------------|---------------------------|--------------------|
-| Refresh Markdown on page | PUT        | http://localhost:\<port\> | \<New Markdown file contents\> |
-| Close Webpage    | DELETE      | http://localhost:\<port\> | |
+| Action                   | HTTP Method | Request URL               | Request Body |
+|--------------------------|-------------|---------------------------|--------------------|
+| Refresh Markdown on page | PUT         | http://localhost:\<port\> | \<New Markdown file contents\> |
+| Close Webpage            | DELETE      | http://localhost:\<port\> | |
 
 By default, `<port>` is 8090
 

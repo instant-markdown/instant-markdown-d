@@ -13,6 +13,7 @@
       src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
     </script>
   <script>
+	  var cursor_string = 'cc_cursor_rr';
 	  function scrollToElement(el){
 		  var scroll_height_new = -1;
 		  var viewport_height = window.innerHeight;
@@ -36,12 +37,16 @@
     socket.on('connect', function () {
       socket.on('newContent', function(newHTML) {
         document.body.innerHTML = newHTML;
-		var el_with_cursor = $(':contains("---cursor---")').filter('li,div,span,p,h1,h2,h3,h4,h5');
-		el_with_cursor.replaceText('---cursor---','');
+		var el_group = $(':contains("'+cursor_string+'")');
+		el_group.replaceText(cursor_string,'');
         MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
-		MathJax.Hub.Queue(function() {
-			scrollToElement(el_with_cursor)
-		});
+
+		var el_with_cursor = el_group.filter('li,div,span,p,h1,h2,h3,h4,h5,caption');
+		if (el_with_cursor.offset() != undefined) {
+			MathJax.Hub.Queue(function() {
+				scrollToElement(el_with_cursor);
+			});
+		}
 	  });
 
       socket.on('die', function(newHTML) {
