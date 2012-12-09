@@ -36,7 +36,7 @@ module InstantMarkdown
       # D.bg{'request'}
       $to_process << Conversion.new(request.body.read, Time.now)
       # p $to_process
-      EM.next_tick{ InstantMarkdown.update_page }
+      EM.defer{ InstantMarkdown.update_page }
       # status 200
       halt 200
     end
@@ -131,7 +131,7 @@ module InstantMarkdown
       end
     elsif not $to_process.empty?
       # ($to_process.size - 1).times{ $to_process.shift }
-      # $to_process = [$to_process.last]
+      $to_process = [$to_process.last]
       # EM.add_timer(1){ update_page }
     end   # if free_procs > 0
   end
