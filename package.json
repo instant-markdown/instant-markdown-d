@@ -7,7 +7,7 @@
 	"main": "instant-markdown-d",
   "preferGlobal" : "true",
 	"bin" : { 
-		"instant-markdown-d" : "./instant-markdown-d"
+		"instant-markdown-d" : "./instant-markdown-d.js"
 	},
 	"dependencies": {
     "socket.io": "",
