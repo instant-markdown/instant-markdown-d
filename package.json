@@ -6,9 +6,7 @@
 	"engine" : "node",
 	"main": "instant-markdown-d",
   "preferGlobal" : "true",
-	"bin" : { 
-		"instant-markdown-d" : "./instant-markdown-d.js"
-	},
+	"bin" : "./bin/instant-markdown-d",
 	"dependencies": {
     "socket.io": "",
     "send": "~0.1.0",

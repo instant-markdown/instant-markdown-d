@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+var server = require('..');
+
+server.start(8090, function(){
+  var initialMarkup = '';
+  process.stdin.on('data', function(chunk){
+    initialMarkup += chunk;
+  });
+  process.stdin.on('end', function(){
+    server.send(initialMarkup);
+  });
+  process.stdin.resume();
+});
