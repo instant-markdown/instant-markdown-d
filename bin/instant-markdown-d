@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var server = require('..');
+var server = require('../lib/instant-markdown-d');
 
 server.start(8090, function(){
   var initialMarkup = '';
@@ -8,7 +8,7 @@ server.start(8090, function(){
     initialMarkup += chunk;
   });
   process.stdin.on('end', function(){
-    server.send(initialMarkup);
+    server.convert(initialMarkup);
   });
   process.stdin.resume();
 });
