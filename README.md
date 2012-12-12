@@ -8,6 +8,10 @@ Installation
 - If you're on Linux and the `xdg-open` executable is not present, install `xdg-utils` through your package manager
 - If you plan on previewing any formats other than github-flavored-markdown, install [pandoc][pandoc]
 
+Running the server
+------------------
+    $ cat <markdown_file> | instant-markdown-d
+
 REST API
 --------
 | Action                    | HTTP Method | Request URL                       | Request Body |
