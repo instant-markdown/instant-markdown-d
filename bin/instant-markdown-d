@@ -2,7 +2,7 @@
 
 var server = require('../lib/instant-markdown-d');
 
-server.start(8090, function(){
+server.start(8090, 'gfm', function(){
   var initialMarkup = '';
   process.stdin.on('data', function(chunk){
     initialMarkup += chunk;
