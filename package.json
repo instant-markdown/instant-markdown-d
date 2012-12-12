@@ -12,5 +12,8 @@
     "send": "~0.1.0",
     "robotskirt": "",
     "highlight.js": ""
+  },
+  "optionalDependencies": {
+    "pdc": ""
   }
 }
