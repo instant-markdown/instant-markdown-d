@@ -14,19 +14,19 @@ function httpHandler(req, res) {
   switch(req.method)
   {
     case 'GET':
-      // Example: /my-repo/raw/master/sub-dir/some.png
-      var githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
-      if (githubUrl) {
-         // Serve the file out of the current working directory
-        send(req, githubUrl[1])
-         .root(process.cwd())
-         .pipe(res);
-        return;
+      // Files that must be served from the package directory
+      var package_urls = ["/", "/index.html", "/node_modules/docter/ghf_marked.css"];
+
+      var source;
+      // If not a package file then serve it from the execution directory
+      if (package_urls.indexOf(req.url) === -1) {
+        source = process.cwd();
+      } else {
+        source = __dirname;
       }
 
-      // Otherwise serve the file from the directory this module is in
       send(req, req.url)
-        .root(__dirname)
+        .root(source)
         .pipe(res);
       break;
 
@@ -69,7 +69,7 @@ function httpHandler(req, res) {
 io.set('log level', 1);
 io.sockets.on('connection', function(sock){
   socket = sock;
-  process.stdout.write('connection established!');
+  //process.stdout.write('connection established!');
 
   var newHTML = '';
   var gfm = spawn(__dirname + '/node_modules/docter/bin/github-flavored-markdown.rb', ['--unstyled']);
