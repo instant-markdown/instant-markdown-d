@@ -1,4 +1,5 @@
-#!/usr/bin/env node
+#!/bin/sh
+':' //; exec "`command -v nodejs || command -v node`" "$0"
 
 var server = require('http').createServer(httpHandler),
     spawn = require('child_process').spawn,
