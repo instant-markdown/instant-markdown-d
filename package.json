@@ -15,5 +15,11 @@
   },
   "optionalDependencies": {
     "pdc": ""
+  },
+  "devDependencies": {
+    "mocha": "git://github.com/visionmedia/mocha.git",
+    "sinon": "",
+    "chai": "",
+    "sinon-chai": ""
   }
 }
