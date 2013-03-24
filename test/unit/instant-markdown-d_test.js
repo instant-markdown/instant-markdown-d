@@ -1,4 +1,5 @@
-var subject   = require('../lib/instant-markdown-d'),
+var project_root = '../../',
+    subject   = require(project_root + 'lib/instant-markdown-d'),
     sinon     = require('sinon'),
     child_process = require('child_process'),
     chai = require('chai'),
