@@ -24,6 +24,14 @@ function httpHandler(req, res) {
          .pipe(res);
         return;
       }
+      var githubUrlRelative = req.url.match(/(.+(?:\.png|\.jpg|\.gif)$)/);
+      if (githubUrlRelative) {
+         // Serve the file out of the current working directory
+        send(req, githubUrlRelative[1])
+         .root(process.cwd())
+         .pipe(res);
+        return;
+      }
 
       // Otherwise serve the file from the directory this module is in
       send(req, req.url)
