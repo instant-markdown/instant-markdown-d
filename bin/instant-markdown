@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-var fs = require('fs'),
-    path = require('path'),
-    cp = require('child_process'),
-    temp = require('temp')
-    imd = require('../lib/instant-markdown-d');
+var fs      = require('fs'),
+    path    = require('path'),
+    cp      = require('child_process'),
+    temp    = require('temp')
+    imd     = require('../lib/instant-markdown-d');
 
 var rawFilename = process.argv[2];
 var rawMarkup   = fs.readFileSync(rawFilename, {encoding: 'utf8'});
@@ -20,6 +20,11 @@ temp.open({prefix: 'instant-markdown', suffix: '.html'}, function(err, info){
 
   fs.write(info.fd, header + markup);
   fs.close(info.fd, function(err){
-    cp.exec('open ' + info.path, function(error, stdout, stderr){});
+    if (process.platform.toLowerCase().indexOf('darwin') >= 0){
+      cp.exec('open ' + info.path, function(error, stdout, stderr){});
+    }
+    else {  // assume unix/linux
+      cp.exec('xdg-open ' + info.path, function(error, stdout, stderr){});
+    }
   });
 });
