@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+var fs = require('fs'),
+    path = require('path'),
+    cp = require('child_process'),
+    temp = require('temp')
+    imd = require('../lib/instant-markdown-d');
+
+var rawFilename = process.argv[2];
+var rawMarkup   = fs.readFileSync(rawFilename, {encoding: 'utf8'});
+
+var gfmCSS        = fs.readFileSync(path.resolve(__dirname, '../lib/ghf_marked.css'));
+var githubCodeCSS = fs.readFileSync(path.resolve(__dirname, '../lib/github.css'));
+var header        = "<style>\n" + gfmCSS + "\n" + githubCodeCSS + "\n</style>\n"
+
+temp.open({prefix: 'instant-markdown', suffix: '.html'}, function(err, info){
+  var converter = require('../lib/converters/gfm');
+  // assuming synchronous converter
+  markup = converter.render([rawMarkup].concat(converter.extra_params));
+
+  fs.write(info.fd, header + markup);
+  fs.close(info.fd, function(err){
+    cp.exec('open ' + info.path, function(error, stdout, stderr){});
+  });
+});

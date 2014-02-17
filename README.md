@@ -25,6 +25,16 @@ REST API
   - You don't have to call the _set input format_ endpoint if you're only using github-flavored-markdown (gfm).
   - `markdown` is for the "plain" markdown format, which doesn't have any of the Github-added features.
 
+Read-only preview
+-----------------
+This module installs a second executable, `instant-markdown`, which just converts a given markdown file, opens it in your default browser, and exits - perfect for cases where you simply want to read a markdown file. Usage:
+
+```
+instant-markdown <filename>
+```
+
+_NOTE: Each `instant-markdown` invocation will create a tempfile that won't be deleted until your machine is restarted, so be wary of calling it thousands of times in a script._
+
 Credits
 -------
 Aaron Lampros's [Docter][docter], which is the underlying Markdown converter and styler.

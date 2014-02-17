@@ -3,15 +3,20 @@
 	"name": "instant-markdown-d",
 	"description": "Instantly-updating Markdown Server",
 	"version": "0.0.7",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/suan/instant-markdown-d.git"
+  },
 	"engine" : "node",
 	"main": "instant-markdown-d",
   "preferGlobal" : "true",
-	"bin" : "./bin/instant-markdown-d",
+	"bin" : ["./bin/instant-markdown-d", "./bin/instant-markdown"],
 	"dependencies": {
     "socket.io": "",
     "send": "~0.1.0",
     "robotskirt": "",
-    "highlight.js": ""
+    "highlight.js": "",
+    "temp": ""
   },
   "optionalDependencies": {
     "pdc": ""
@@ -20,6 +25,7 @@
     "mocha": "git://github.com/visionmedia/mocha.git",
     "sinon": "",
     "chai": "",
-    "sinon-chai": ""
+    "sinon-chai": "",
+    "request": ""
   }
 }
