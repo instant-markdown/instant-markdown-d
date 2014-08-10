@@ -17,16 +17,7 @@ function httpHandler(req, res) {
     case 'GET':
       // Example: /my-repo/raw/master/sub-dir/some.png
       var githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/),
-          img_exts = ['.png', '.jpg', '.jpeg', '.gif'],
-          is_img = false;
-
-      // Check if an image is requested.
-      for (var i=0; i<img_exts.length; i++) {
-        if (req.url.indexOf(img_exts[i]) !== -1) {
-            is_img = true;
-            break;
-        }
-      }
+          is_img = req.url.match(/(.+(?:\.png|\.jpg|\.jpeg|\.gif)$)/);
 
       if (githubUrl || is_img) {
          // Serve the file out of the current working directory
