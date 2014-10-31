@@ -10,7 +10,7 @@
 		"instant-markdown-d" : "./instant-markdown-d"
 	},
 	"dependencies": {
-    "socket.io": "",
+    "socket.io": "~0.9",
     "docter": "https://github.com/suan/Docter/tarball/master",
     "send": "~0.1.0"
   }
