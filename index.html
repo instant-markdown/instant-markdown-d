@@ -1,13 +1,22 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" type="text/css" href="/node_modules/docter/ghf_marked.css" />
+  <link rel="stylesheet" type="text/css" href="/node_modules/highlight.js/styles/github.css">
+  <link rel="stylesheet" type="text/css" href="/node_modules/github-markdown-css/github-markdown.css">
+  <style>
+    .markdown-body {
+      min-width: 200px;
+      max-width: 790px;
+      margin: 0 auto;
+      padding: 30px;
+    }
+  </style>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     var socket = io.connect('http://localhost:8090/');
     socket.on('connect', function () {
       socket.on('newContent', function(newHTML) {
-        document.body.innerHTML = newHTML;
+        document.querySelector(".markdown-body").innerHTML = newHTML;
       });
       socket.on('die', function(newHTML) {
         window.open('', '_self', '');
@@ -23,5 +32,6 @@
   </script>
 </head>
 <body>
+  <article class="markdown-body"></article>
 </body>
 </html>

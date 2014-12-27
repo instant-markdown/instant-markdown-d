@@ -4,7 +4,6 @@ instant-markdown-d is a small Node.js server that enables instant compilation an
 
 Installation
 ------------
-- `[sudo] gem install redcarpet pygments.rb`
 - `[sudo] npm -g install instant-markdown-d`
 
 REST API
@@ -15,10 +14,3 @@ REST API
 | Close Webpage    | DELETE      | http://localhost:\<port\> | |
 
 By default, `<port>` is 8090
-
-Credits
--------
-Aaron Lampros's [Docter][docter], which is the underlying Markdown converter and styler.
-
-
-[docter]: https://github.com/alampros/Docter

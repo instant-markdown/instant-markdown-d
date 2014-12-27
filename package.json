@@ -1,17 +1,19 @@
 {
-	"author": "Suan-Aik Yeo <yeosuanaik@gmail.com>",
-	"name": "instant-markdown-d",
-	"description": "Instantly-updating Markdown Server",
-	"version": "0.0.8",
-	"engine" : "node",
-	"main": "instant-markdown-d",
-  "preferGlobal" : "true",
-	"bin" : { 
-		"instant-markdown-d" : "./instant-markdown-d"
-	},
-	"dependencies": {
-    "socket.io": "",
-    "docter": "https://github.com/suan/Docter/tarball/master",
-    "send": "~0.1.0"
+  "author": "Suan-Aik Yeo <yeosuanaik@gmail.com>",
+  "name": "instant-markdown-d",
+  "description": "Instantly-updating Markdown Server",
+  "version": "0.0.8",
+  "engine": "node",
+  "main": "instant-markdown-d",
+  "preferGlobal": "true",
+  "bin": {
+    "instant-markdown-d": "./instant-markdown-d"
+  },
+  "dependencies": {
+    "github-markdown-css": "^2.0.2",
+    "highlight.js": "^8.4.0",
+    "marked": "^0.3.2",
+    "send": "~0.1.0",
+    "socket.io": ""
   }
 }

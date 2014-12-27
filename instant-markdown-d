@@ -1,15 +1,42 @@
 #!/bin/sh
 ':' //; exec "`command -v nodejs || command -v node`" "$0"
 
+var marked = require('marked');
+var hljs = require('highlight.js');
 var server = require('http').createServer(httpHandler),
-    spawn = require('child_process').spawn,
     exec = require('child_process').exec,
     io = require('socket.io').listen(server),
     send = require('send'),
     server,
     socket;
 
+marked.setOptions({
+  highlight: function(code, lang) {
+    if (lang) {
+      return hljs.highlight(lang, code).value;
+    } else {
+      return hljs.highlightAuto(code).value;
+    }
+  }
+});
+
 server.listen(8090);
+
+function writeMarkdown(input, output) {
+  var body = '';
+  input.on('data', function(data) {
+    body += data;
+    if (body.length > 1e6) {
+      throw new Error('The request body is too long.');
+    }
+  });
+  input.on('end', function() {
+    marked(body, function(err, content) {
+      if (err) { throw err; }
+      output.emit('newContent', content);
+    });
+  });
+}
 
 function httpHandler(req, res) {
   switch(req.method)
@@ -45,22 +72,9 @@ function httpHandler(req, res) {
       break;
 
     case 'PUT':
-      var newHTML = '';
-      var gfm = spawn(__dirname + '/node_modules/docter/bin/github-flavored-markdown.rb', ['--unstyled']);
-      req.on('data', function(chunk){
-        gfm.stdin.write(chunk);
-      });
-      req.on('end', function(){
-        gfm.stdin.end();
-        res.writeHead(200);
-        res.end();
-      });
-      gfm.stdout.on('data', function(data) {
-        newHTML += data;
-      });
-      gfm.on('exit',function(ecode){
-        socket.emit('newContent', newHTML);
-      });
+      writeMarkdown(req, socket);
+      res.writeHead(200);
+      res.end();
       break;
 
     default:
@@ -71,21 +85,7 @@ io.set('log level', 1);
 io.sockets.on('connection', function(sock){
   socket = sock;
   process.stdout.write('connection established!');
-
-  var newHTML = '';
-  var gfm = spawn(__dirname + '/node_modules/docter/bin/github-flavored-markdown.rb', ['--unstyled']);
-  process.stdin.on('data', function(chunk){
-    gfm.stdin.write(chunk);
-  });
-  process.stdin.on('end', function(){
-    gfm.stdin.end();
-  });
-  gfm.stdout.on('data', function(data) {
-    newHTML += data;
-  });
-  gfm.on('exit',function(ecode){
-    socket.emit('newContent', newHTML);
-  });
+  writeMarkdown(process.stdin, socket);
   process.stdin.resume();
 });
 
