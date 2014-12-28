@@ -32,8 +32,11 @@ function writeMarkdown(input, output) {
   });
   input.on('end', function() {
     marked(body, function(err, content) {
-      if (err) { throw err; }
-      output.emit('newContent', content);
+      if (!err) {
+        output.emit('newContent', content);
+      } else {
+        console.error(err);
+      }
     });
   });
 }
