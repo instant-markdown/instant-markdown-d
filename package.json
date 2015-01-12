@@ -12,7 +12,7 @@
   "dependencies": {
     "github-markdown-css": "^2.0.2",
     "highlight.js": "^8.4.0",
-    "marked": "^0.3.2",
+    "markdown-it": "^3.0.3",
     "send": "~0.1.0",
     "socket.io": ""
   }

@@ -1,7 +1,7 @@
 #!/bin/sh
 ':' //; exec "`command -v nodejs || command -v node`" "$0"
 
-var marked = require('marked');
+var MarkdownIt = require('markdown-it');
 var hljs = require('highlight.js');
 var server = require('http').createServer(httpHandler),
     exec = require('child_process').exec,
@@ -10,17 +10,28 @@ var server = require('http').createServer(httpHandler),
     server,
     socket;
 
-marked.setOptions({
-  highlight: function(code, lang) {
-    if (lang) {
-      return hljs.highlight(lang, code).value;
-    } else {
-      return hljs.highlightAuto(code).value;
+server.listen(8090);
+
+var md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  highlight: function(str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(lang, str).value;
+      } catch (err) {
+        // Do nothing
+      }
     }
+
+    try {
+      return hljs.highlightAuto(str).value;
+    } catch (err) {
+      // Do nothing
+    }
+    return '';
   }
 });
-
-server.listen(8090);
 
 function writeMarkdown(input, output) {
   var body = '';
@@ -31,13 +42,7 @@ function writeMarkdown(input, output) {
     }
   });
   input.on('end', function() {
-    marked(body, function(err, content) {
-      if (!err) {
-        output.emit('newContent', content);
-      } else {
-        console.error(err);
-      }
-    });
+    output.emit('newContent', md.render(body));
   });
 }
 
