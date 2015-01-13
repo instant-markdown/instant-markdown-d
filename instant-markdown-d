@@ -22,14 +22,9 @@ var md = new MarkdownIt({
       } catch (err) {
         // Do nothing
       }
+    } else {
+      return str;
     }
-
-    try {
-      return hljs.highlightAuto(str).value;
-    } catch (err) {
-      // Do nothing
-    }
-    return '';
   }
 });
 
