@@ -45,19 +45,27 @@ function httpHandler(req, res) {
   switch(req.method)
   {
     case 'GET':
-      // Example: /my-repo/raw/master/sub-dir/some.png
-      var githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
-      if (githubUrl) {
-         // Serve the file out of the current working directory
-        send(req, githubUrl[1])
-         .root(process.cwd())
-         .pipe(res);
-        return;
+      // By default, serve files from current working directory (e.g.
+      // next to the markdown file)
+      var url = req.url;
+      var root = process.cwd();
+
+      // Except for a few files we need to serve from the module
+      // directory
+      var package_urls = ["/", "/index.html", "/github-markdown.css", "/github-syntax-highlight.css"];
+      if (package_urls.indexOf(url) >= 0) {
+        root = __dirname;
       }
 
-      // Otherwise serve the file from the directory this module is in
-      send(req, req.url)
-        .root(__dirname)
+      // Support absolute urls to github files (no longer required,
+      // github now also supports relative urls, but for compatibility
+      // with older documents). Example: /my-repo/raw/master/sub-dir/some.png
+      var match = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
+      if (match)
+        url = match[1];
+
+      send(req, url)
+        .root(root)
         .pipe(res);
       break;
 
