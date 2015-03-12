@@ -8,6 +8,7 @@ var server = require('http').createServer(httpHandler),
     io = require('socket.io').listen(server),
     send = require('send'),
     server,
+    html = "",
     socket;
 
 server.listen(8090);
@@ -37,7 +38,8 @@ function writeMarkdown(input, output) {
     }
   });
   input.on('end', function() {
-    output.emit('newContent', md.render(body));
+    html = md.render(body);
+    output.emit('newContent', html);
   });
 }
 
@@ -88,6 +90,7 @@ io.set('log level', 1);
 io.sockets.on('connection', function(sock){
   socket = sock;
   process.stdout.write('connection established!');
+  socket.emit('newContent', html);
   writeMarkdown(process.stdin, socket);
   process.stdin.resume();
 });
