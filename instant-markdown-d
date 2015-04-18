@@ -1,5 +1,5 @@
 #!/bin/sh
-':' //; exec "`command -v nodejs || command -v node`" "$0"
+':' //; exec "`command -v nodejs || command -v node`" "$0" "$*"
 
 var MarkdownIt = require('markdown-it');
 var hljs = require('highlight.js');
@@ -8,7 +8,8 @@ var server = require('http').createServer(httpHandler),
     io = require('socket.io').listen(server),
     send = require('send'),
     server,
-    socket;
+    socket,
+    argv = require('optimist').argv;
 
 server.listen(8090);
 
@@ -92,10 +93,15 @@ io.sockets.on('connection', function(sock){
   process.stdin.resume();
 });
 
+var openCommand;
+if (argv.browser === undefined) {
+  if (process.platform.toLowerCase().indexOf('darwin') >= 0) {
+    openCommand = 'open -g http://localhost:8090';
+  } else { // assume unix/linux
+    openCommand = 'xdg-open http://localhost:8090';
+  }
+} else {
+  openCommand = argv.browser + ' http://localhost:8090';
+}
 
-if (process.platform.toLowerCase().indexOf('darwin') >= 0){
-  exec('open -g http://localhost:8090', function(error, stdout, stderr){});
-}
-else {  // assume unix/linux
-  exec('xdg-open http://localhost:8090', function(error, stdout, stderr){});
-}
+exec(openCommand, function(error, stdout, stderr){});

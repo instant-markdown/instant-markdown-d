@@ -14,3 +14,10 @@ REST API
 | Close Webpage    | DELETE      | http://localhost:\<port\> | |
 
 By default, `<port>` is 8090
+
+Prefered browser
+----------------
+By default, instant-markdown-d will use the default browser, if you want to
+use an another browser, you can pass the `browser` option:
+
+- `instant-markdown-d --browser=google-chrome`
