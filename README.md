@@ -21,5 +21,4 @@ Preview page appearance
 
 instant-markdown-d can be passed the full path of a script to execute right
 after the preview page is launched. On OS X, for example, an AppleScript can be
-used to change the size and position of the preview page On OS X, for example,
-an AppleScript can be used to change the size and position of the preview page.
+used to change the size and position of the preview page.
