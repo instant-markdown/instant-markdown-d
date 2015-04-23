@@ -1,5 +1,7 @@
 #!/bin/sh
-':' //; exec "`command -v nodejs || command -v node`" "$0"
+':' //; exec "`command -v nodejs || command -v node`" "$0" "$1"
+
+var custom_script = process.argv[2];
 
 var MarkdownIt = require('markdown-it');
 var hljs = require('highlight.js');
@@ -95,6 +97,9 @@ io.sockets.on('connection', function(sock){
 
 if (process.platform.toLowerCase().indexOf('darwin') >= 0){
   exec('open -g http://localhost:8090', function(error, stdout, stderr){});
+  if(custom_script) {
+    exec('osascript '.concat(custom_script));
+  }
 }
 else {  // assume unix/linux
   exec('xdg-open http://localhost:8090', function(error, stdout, stderr){});

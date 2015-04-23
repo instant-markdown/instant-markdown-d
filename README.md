@@ -14,3 +14,12 @@ REST API
 | Close Webpage    | DELETE      | http://localhost:\<port\> | |
 
 By default, `<port>` is 8090
+
+Preview page appearance
+-----------------------
+(Currently only supported on OS X)
+
+instant-markdown-d can be passed the full path of a script to execute right
+after the preview page is launched. On OS X, for example, an AppleScript can be
+used to change the size and position of the preview page On OS X, for example,
+an AppleScript can be used to change the size and position of the preview page.
