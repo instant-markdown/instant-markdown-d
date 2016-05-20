@@ -756,3 +756,7 @@ td,th {
   position: relative;
   border-color: #4183c4;
 }
+
+.emoji {
+  height: 1.2em;
+}

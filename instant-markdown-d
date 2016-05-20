@@ -2,6 +2,8 @@
 ':' //; exec "`command -v nodejs || command -v node`" "$0"
 
 var MarkdownIt = require('markdown-it');
+var emoji = require('markdown-it-emoji');
+var twemoji = require('twemoji');
 var hljs = require('highlight.js');
 var server = require('http').createServer(httpHandler),
     exec = require('child_process').exec,
@@ -27,6 +29,12 @@ var md = new MarkdownIt({
     }
   }
 });
+
+md.use(emoji);
+
+md.renderer.rules.emoji = function(token, idx) {
+  return twemoji.parse(token[idx].to);
+};
 
 function writeMarkdown(input, output) {
   var body = '';
