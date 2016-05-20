@@ -16,7 +16,7 @@
   </style>
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    var socket = io.connect('http://localhost:8090/');
+    var socket = io.connect('http://'+ window.location.host +'/');
     socket.on('connect', function () {
       socket.on('newContent', function(newHTML) {
         document.querySelector(".markdown-body").innerHTML = newHTML;
