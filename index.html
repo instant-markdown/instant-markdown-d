@@ -13,11 +13,20 @@
       margin: 0 auto;
       padding: 30px;
     }
+    #con-error {
+      position: fixed;
+      top: 0px;
+      right: 0px;
+      padding: 5px;
+      background: white;
+      color: red;
+    }
   </style>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     var socket = io.connect('http://'+ window.location.host +'/');
     socket.on('connect', function () {
+      setDisconnected(false);
       socket.on('newContent', function(newHTML) {
         document.querySelector(".markdown-body").innerHTML = newHTML;
       });
@@ -32,6 +41,9 @@
         document.body.innerHTML = firefoxWarning;
       });
     });
+    socket.on('disconnect', function() {
+      setDisconnected(true);
+    });
 
     try {
       eval('// If CSP is active, then this is blocked');
@@ -42,6 +54,11 @@
       meta.setAttribute('http-equiv', 'Content-Security-Policy');
       meta.setAttribute('content', "script-src 'none';");
       document.head.appendChild(meta);
+    }
+
+    function setDisconnected(isDisconnected) {
+      document.getElementById('con-error').style.display =
+        isDisconnected ? 'block' : 'none';
     }
   </script>
 </head>
@@ -57,5 +74,6 @@
       </div>
     </div>
   </div>
+  <div id="con-error" style="display:none">Live preview is unavailable</div>
 </body>
 </html>
