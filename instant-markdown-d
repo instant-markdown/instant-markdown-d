@@ -15,10 +15,10 @@ var server = require('http').createServer(httpHandler),
 // directory of the open file!
 if (process.env.INSTANT_MARKDOWN_OPEN_TO_THE_WORLD) {
   // Listen on any interface.
-  server.listen(8090);
+  server.listen(8090, onListening);
 } else {
   // Listen locally.
-  server.listen(8090, '127.0.0.1');
+  server.listen(8090, '127.0.0.1', onListening);
 }
 
 var md = new MarkdownIt({
@@ -121,9 +121,11 @@ io.sockets.on('connection', function(sock){
 });
 
 
-if (process.platform.toLowerCase().indexOf('darwin') >= 0){
-  exec('open -g http://localhost:8090', function(error, stdout, stderr){});
-}
-else {  // assume unix/linux
-  exec('xdg-open http://localhost:8090', function(error, stdout, stderr){});
+function onListening() {
+  if (process.platform.toLowerCase().indexOf('darwin') >= 0){
+    exec('open -g http://localhost:8090');
+  }
+  else {  // assume unix/linux
+    exec('xdg-open http://localhost:8090');
+  }
 }
