@@ -37,7 +37,7 @@ var md = new MarkdownIt({
   }
 });
 
-function writeMarkdown(input, output) {
+function writeMarkdown(input) {
   var body = '';
   input.on('data', function(data) {
     body += data;
@@ -46,7 +46,7 @@ function writeMarkdown(input, output) {
     }
   });
   input.on('end', function() {
-    output.emit('newContent', md.render(body));
+    io.sockets.emit('newContent', md.render(body));
   });
 }
 
@@ -103,7 +103,7 @@ function httpHandler(req, res) {
       break;
 
     case 'PUT':
-      writeMarkdown(req, socket);
+      writeMarkdown(req);
       res.writeHead(200);
       res.end();
       break;
@@ -113,9 +113,8 @@ function httpHandler(req, res) {
 }
 
 io.sockets.on('connection', function(sock){
-  socket = sock;
   process.stdout.write('connection established!');
-  writeMarkdown(process.stdin, socket);
+  writeMarkdown(process.stdin);
   process.stdin.resume();
 });
 
