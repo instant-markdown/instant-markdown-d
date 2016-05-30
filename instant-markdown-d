@@ -112,7 +112,6 @@ function httpHandler(req, res) {
   }
 }
 
-io.set('log level', 1);
 io.sockets.on('connection', function(sock){
   socket = sock;
   process.stdout.write('connection established!');
