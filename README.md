@@ -14,3 +14,11 @@ REST API
 | Close Webpage    | DELETE      | http://localhost:\<port\> | |
 
 By default, `<port>` is 8090
+
+Environment variables
+---------------------
+
+* `INSTANT_MARKDOWN_OPEN_TO_THE_WORLD=1` - by default, the server only listens
+  on localhost. To make the server available to others in your network, set this
+  environment variable to a non-empty value. Only use this setting on trusted
+  networks!

@@ -10,7 +10,16 @@ var server = require('http').createServer(httpHandler),
     server,
     socket;
 
-server.listen(8090);
+// WARNING: By setting this environment variable, anyone on your network may
+// run arbitrary code in your browser and read arbitrary files in the working
+// directory of the open file!
+if (process.env.INSTANT_MARKDOWN_OPEN_TO_THE_WORLD) {
+  // Listen on any interface.
+  server.listen(8090);
+} else {
+  // Listen locally.
+  server.listen(8090, '127.0.0.1');
+}
 
 var md = new MarkdownIt({
   html: true,
