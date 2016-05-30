@@ -50,6 +50,22 @@ function writeMarkdown(input, output) {
   });
 }
 
+function addSecurityHeaders(res, allowScriptsAtStartup) {
+  if (process.env.INSTANT_MARKDOWN_ALLOW_UNSAFE_CONTENT) {
+    return;
+  }
+
+  var csp =
+    // index.html will drop the scripting capabilities upon load.
+    "script-src " + (allowScriptsAtStartup ? "'self' 'unsafe-inline'": "") +
+    "; sandbox allow-scripts allow-modals allow-forms";
+  if (process.env.INSTANT_MARKDOWN_BLOCK_EXTERNAL) {
+    csp += '; default-src "self"';
+  }
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Content-Security-Policy', csp);
+}
+
 function httpHandler(req, res) {
   switch(req.method)
   {
@@ -57,12 +73,15 @@ function httpHandler(req, res) {
       // Example: /my-repo/raw/master/sub-dir/some.png
       var githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
       if (githubUrl) {
+        addSecurityHeaders(res, false);
          // Serve the file out of the current working directory
         send(req, githubUrl[1])
          .root(process.cwd())
          .pipe(res);
         return;
       }
+
+      addSecurityHeaders(res, true);
 
       // Otherwise serve the file from the directory this module is in
       send(req, req.url)

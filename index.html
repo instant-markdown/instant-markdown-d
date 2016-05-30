@@ -32,6 +32,17 @@
         document.body.innerHTML = firefoxWarning;
       });
     });
+
+    try {
+      eval('// If CSP is active, then this is blocked');
+    } catch (e) {
+      // Detected that the CSP was active (by the user's preference).
+      // Drop capabilities to prevent rendered markdown from executing scripts.
+      var meta = document.createElement('meta');
+      meta.setAttribute('http-equiv', 'Content-Security-Policy');
+      meta.setAttribute('content', "script-src 'none';");
+      document.head.appendChild(meta);
+    }
   </script>
 </head>
 <body>
