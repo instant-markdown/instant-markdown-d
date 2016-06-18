@@ -56,20 +56,35 @@ function readAllInput(input, callback) {
   });
 }
 
-function addSecurityHeaders(res, allowScriptsAtStartup) {
-  if (process.env.INSTANT_MARKDOWN_ALLOW_UNSAFE_CONTENT) {
-    return;
-  }
+function addSecurityHeaders(req, res, isIndexFile) {
+  var csp = [];
 
-  var csp =
-    // index.html will drop the scripting capabilities upon load.
-    "script-src " + (allowScriptsAtStartup ? "'self' 'unsafe-inline'": "") +
-    "; sandbox allow-scripts allow-modals allow-forms";
+  // Cannot use 'self' because Chrome does not treat 'self' as http://host
+  // when the sandbox directive is set.
+  var HTTP_HOST = req.headers.host || 'localhost:8090';
+  var CSP_SELF = 'http://' + HTTP_HOST;
+
+  if (!process.env.INSTANT_MARKDOWN_ALLOW_UNSAFE_CONTENT) {
+    if (isIndexFile) {
+      // index.html will drop the scripting capabilities upon load.
+      csp.push('script-src ' + CSP_SELF + " 'unsafe-inline'");
+      csp.push('sandbox allow-scripts allow-modals allow-forms');
+    } else {
+      csp.push('script-src ');
+    }
+  }
   if (process.env.INSTANT_MARKDOWN_BLOCK_EXTERNAL) {
-    csp += '; default-src "self"';
+    csp.push('default-src data: ' + CSP_SELF);
+    csp.push("style-src data: 'unsafe-inline' " + CSP_SELF);
+    csp.push('connect-src ' + CSP_SELF + ' ws://' + HTTP_HOST);
   }
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('Content-Security-Policy', csp);
+  res.setHeader('Content-Security-Policy', csp.join('; '));
+  if (isIndexFile) {
+    // Never cache the index file, to make sure that changes to the CSP are
+    // picked up across soft reloads.
+    res.setHeader('Cache-Control', 'no-store');
+  }
 }
 
 function httpHandler(req, res) {
@@ -79,7 +94,7 @@ function httpHandler(req, res) {
       // Example: /my-repo/raw/master/sub-dir/some.png
       var githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
       if (githubUrl) {
-        addSecurityHeaders(res, false);
+        addSecurityHeaders(req, res, false);
          // Serve the file out of the current working directory
         send(req, githubUrl[1])
          .root(process.cwd())
@@ -87,7 +102,8 @@ function httpHandler(req, res) {
         return;
       }
 
-      addSecurityHeaders(res, true);
+      var isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
+      addSecurityHeaders(req, res, isIndexFile);
 
       // Otherwise serve the file from the directory this module is in
       send(req, req.url)
