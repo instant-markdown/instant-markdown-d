@@ -6,9 +6,7 @@ var hljs = require('highlight.js');
 var server = require('http').createServer(httpHandler),
     exec = require('child_process').exec,
     io = require('socket.io').listen(server),
-    send = require('send'),
-    server,
-    socket;
+    send = require('send');
 
 // WARNING: By setting this environment variable, anyone on your network may
 // run arbitrary code in your browser and read arbitrary files in the working
@@ -120,7 +118,7 @@ function httpHandler(req, res) {
       // break;
 
     case 'DELETE':
-      socket.emit('die');
+      io.sockets.emit('die');
       process.exit();
       break;
 
