@@ -6,11 +6,18 @@ var hljs = require('highlight.js');
 var server = require('http').createServer(httpHandler),
     exec = require('child_process').exec,
     io = require('socket.io').listen(server),
-    send = require('send'),
-    server,
-    socket;
+    send = require('send');
 
-server.listen(8090);
+// WARNING: By setting this environment variable, anyone on your network may
+// run arbitrary code in your browser and read arbitrary files in the working
+// directory of the open file!
+if (process.env.INSTANT_MARKDOWN_OPEN_TO_THE_WORLD) {
+  // Listen on any interface.
+  server.listen(8090, onListening).once('error', onServerError);
+} else {
+  // Listen locally.
+  server.listen(8090, '127.0.0.1', onListening).once('error', onServerError);
+}
 
 var md = new MarkdownIt({
   html: true,
@@ -28,7 +35,13 @@ var md = new MarkdownIt({
   }
 });
 
-function writeMarkdown(input, output) {
+var lastWrittenMarkdown = '';
+function writeMarkdown(body) {
+  lastWrittenMarkdown = md.render(body);
+  io.sockets.emit('newContent', lastWrittenMarkdown);
+}
+
+function readAllInput(input, callback) {
   var body = '';
   input.on('data', function(data) {
     body += data;
@@ -37,8 +50,39 @@ function writeMarkdown(input, output) {
     }
   });
   input.on('end', function() {
-    output.emit('newContent', md.render(body));
+    callback(body);
   });
+}
+
+function addSecurityHeaders(req, res, isIndexFile) {
+  var csp = [];
+
+  // Cannot use 'self' because Chrome does not treat 'self' as http://host
+  // when the sandbox directive is set.
+  var HTTP_HOST = req.headers.host || 'localhost:8090';
+  var CSP_SELF = 'http://' + HTTP_HOST;
+
+  if (!process.env.INSTANT_MARKDOWN_ALLOW_UNSAFE_CONTENT) {
+    if (isIndexFile) {
+      // index.html will drop the scripting capabilities upon load.
+      csp.push('script-src ' + CSP_SELF + " 'unsafe-inline'");
+      csp.push('sandbox allow-scripts allow-modals allow-forms');
+    } else {
+      csp.push('script-src ');
+    }
+  }
+  if (process.env.INSTANT_MARKDOWN_BLOCK_EXTERNAL) {
+    csp.push('default-src data: ' + CSP_SELF);
+    csp.push("style-src data: 'unsafe-inline' " + CSP_SELF);
+    csp.push('connect-src ' + CSP_SELF + ' ws://' + HTTP_HOST);
+  }
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Content-Security-Policy', csp.join('; '));
+  if (isIndexFile) {
+    // Never cache the index file, to make sure that changes to the CSP are
+    // picked up across soft reloads.
+    res.setHeader('Cache-Control', 'no-store');
+  }
 }
 
 function httpHandler(req, res) {
@@ -48,12 +92,16 @@ function httpHandler(req, res) {
       // Example: /my-repo/raw/master/sub-dir/some.png
       var githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
       if (githubUrl) {
+        addSecurityHeaders(req, res, false);
          // Serve the file out of the current working directory
         send(req, githubUrl[1])
          .root(process.cwd())
          .pipe(res);
         return;
       }
+
+      var isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
+      addSecurityHeaders(req, res, isIndexFile);
 
       // Otherwise serve the file from the directory this module is in
       send(req, req.url)
@@ -70,12 +118,12 @@ function httpHandler(req, res) {
       // break;
 
     case 'DELETE':
-      socket.emit('die');
+      io.sockets.emit('die');
       process.exit();
       break;
 
     case 'PUT':
-      writeMarkdown(req, socket);
+      readAllInput(req, writeMarkdown);
       res.writeHead(200);
       res.end();
       break;
@@ -84,18 +132,42 @@ function httpHandler(req, res) {
   }
 }
 
-io.set('log level', 1);
 io.sockets.on('connection', function(sock){
-  socket = sock;
   process.stdout.write('connection established!');
-  writeMarkdown(process.stdin, socket);
-  process.stdin.resume();
+  if (lastWrittenMarkdown) {
+    sock.emit('newContent', lastWrittenMarkdown);
+  }
 });
 
 
-if (process.platform.toLowerCase().indexOf('darwin') >= 0){
-  exec('open -g http://localhost:8090', function(error, stdout, stderr){});
+function onListening() {
+  if (process.platform.toLowerCase().indexOf('darwin') >= 0){
+    exec('open -g http://localhost:8090');
+  }
+  else {  // assume unix/linux
+    exec('xdg-open http://localhost:8090');
+  }
+  readAllInput(process.stdin, function(body) {
+    writeMarkdown(body);
+  });
+  process.stdin.resume();
 }
-else {  // assume unix/linux
-  exec('xdg-open http://localhost:8090', function(error, stdout, stderr){});
+
+function onServerError(e) {
+  if (e.code === 'EADDRINUSE') {
+    readAllInput(process.stdin, function(body) {
+      // Forward to existing instant-markdown-d server.
+      require('http').request({
+        hostname: 'localhost',
+        port: 8090,
+        path: '/',
+        method: 'PUT',
+      }).end(body);
+    });
+    process.stdin.resume();
+    return;
+  }
+
+  // Another unexpected error. Raise it again.
+  throw e;
 }
