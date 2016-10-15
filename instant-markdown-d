@@ -1,11 +1,11 @@
-#!/bin/sh
-':' //; exec "`command -v nodejs || command -v node`" "$0"
+#!/usr/bin/env node
 
 var MarkdownIt = require('markdown-it');
 var hljs = require('highlight.js');
 var server = require('http').createServer(httpHandler),
     exec = require('child_process').exec,
     io = require('socket.io').listen(server),
+    os = require('os'),
     send = require('send');
 
 // WARNING: By setting this environment variable, anyone on your network may
@@ -141,11 +141,12 @@ io.sockets.on('connection', function(sock){
 
 
 function onListening() {
-  if (process.platform.toLowerCase().indexOf('darwin') >= 0){
-    exec('open -g http://localhost:8090');
-  }
-  else {  // assume unix/linux
-    exec('xdg-open http://localhost:8090');
+  if (os.platform() === 'win32') {
+    exec('start /b http://localhost:8090', function(error, stdout, stderr){});
+  } else if (os.platform() === 'darwin') {
+    exec('open -g http://localhost:8090', function(error, stdout, stderr){});
+  } else { // assume unix/linux
+    exec('xdg-open http://localhost:8090', function(error, stdout, stderr){});
   }
   readAllInput(process.stdin, function(body) {
     writeMarkdown(body);
