@@ -8,15 +8,20 @@ var server = require('http').createServer(httpHandler),
     os = require('os'),
     send = require('send');
 
+var port = 8090;
+if (process.env.INSTANT_MARKDOWN_DAEMON_PORT) {
+    port = parseInt(process.env.INSTANT_MARKDOWN_DAEMON_PORT);
+}
+
 // WARNING: By setting this environment variable, anyone on your network may
 // run arbitrary code in your browser and read arbitrary files in the working
 // directory of the open file!
 if (process.env.INSTANT_MARKDOWN_OPEN_TO_THE_WORLD) {
   // Listen on any interface.
-  server.listen(8090, onListening).once('error', onServerError);
+  server.listen(port, onListening).once('error', onServerError);
 } else {
   // Listen locally.
-  server.listen(8090, '127.0.0.1', onListening).once('error', onServerError);
+  server.listen(port, '127.0.0.1', onListening).once('error', onServerError);
 }
 
 var md = new MarkdownIt({
@@ -59,7 +64,7 @@ function addSecurityHeaders(req, res, isIndexFile) {
 
   // Cannot use 'self' because Chrome does not treat 'self' as http://host
   // when the sandbox directive is set.
-  var HTTP_HOST = req.headers.host || 'localhost:8090';
+  var HTTP_HOST = req.headers.host || 'localhost:' + port;
   var CSP_SELF = 'http://' + HTTP_HOST;
 
   if (!process.env.INSTANT_MARKDOWN_ALLOW_UNSAFE_CONTENT) {
@@ -142,11 +147,11 @@ io.sockets.on('connection', function(sock){
 
 function onListening() {
   if (os.platform() === 'win32') {
-    exec('start /b http://localhost:8090', function(error, stdout, stderr){});
+    exec('start /b http://localhost:' + port, function(error, stdout, stderr){});
   } else if (os.platform() === 'darwin') {
-    exec('open -g http://localhost:8090', function(error, stdout, stderr){});
+    exec('open -g http://localhost:' + port, function(error, stdout, stderr){});
   } else { // assume unix/linux
-    exec('xdg-open http://localhost:8090', function(error, stdout, stderr){});
+    exec('xdg-open http://localhost:' + port, function(error, stdout, stderr){});
   }
   readAllInput(process.stdin, function(body) {
     writeMarkdown(body);
@@ -160,7 +165,7 @@ function onServerError(e) {
       // Forward to existing instant-markdown-d server.
       require('http').request({
         hostname: 'localhost',
-        port: 8090,
+        port: port,
         path: '/',
         method: 'PUT',
       }).end(body);
