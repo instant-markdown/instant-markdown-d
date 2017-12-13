@@ -6,7 +6,17 @@ var server = require('http').createServer(httpHandler),
     exec = require('child_process').exec,
     io = require('socket.io').listen(server),
     os = require('os'),
-    send = require('send');
+    send = require('send'),
+    mk = require('markdown-it-katex');
+    //mk = require('markdown-it-mathjax');
+
+// Log environment variables for debug
+//const { Console } = require('console');
+//var fs = require('fs');
+//const output = fs.createWriteStream('./test.log');
+//const errorOutput = fs.createWriteStream('./test.log');
+//const logger = new Console(output, errorOutput);
+//logger.log(process.env)
 
 // WARNING: By setting this environment variable, anyone on your network may
 // run arbitrary code in your browser and read arbitrary files in the working
@@ -33,7 +43,9 @@ var md = new MarkdownIt({
       return str;
     }
   }
-});
+//}).use(mk, { "displayMode": false });
+}).use(mk);
+//}).use(mk());
 
 var lastWrittenMarkdown = '';
 function writeMarkdown(body) {
@@ -89,33 +101,27 @@ function httpHandler(req, res) {
   switch(req.method)
   {
     case 'GET':
-      // Example: /my-repo/raw/master/sub-dir/some.png
-      var githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
-      if (githubUrl) {
-        addSecurityHeaders(req, res, false);
-         // Serve the file out of the current working directory
-        send(req, githubUrl[1])
-         .root(process.cwd())
-         .pipe(res);
-        return;
-      }
-
+     
+      var basedir = __dirname
       var isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
+      var isStaticContent = /^\/(imd_static)\/\.*/.test(req.url);
+
+      //logger.log("isIndex: " + isIndexFile + " isStatic: " + isStaticContent + " URL: "  + req.url);
+
       addSecurityHeaders(req, res, isIndexFile);
+
+      // Only server content from the base folder tree if allowed
+      if (process.env.INSTANT_MARKDOWN_SERVE_FOLDER_TREE &&
+        !(isStaticContent || isIndexFile)) {
+        basedir = process.cwd(); 
+      }
 
       // Otherwise serve the file from the directory this module is in
       send(req, req.url)
-        .root(__dirname)
+        .root(basedir)
         .pipe(res);
-      break;
 
-    // case 'HEAD':
-      // res.writeHead(200);
-      // res.end();
-      // exec('open -g http://localhost:8090', function(error, stdout, stderr){
-        // http.request({port: 8090})
-      // });
-      // break;
+      break;
 
     case 'DELETE':
       io.sockets.emit('die');
@@ -127,7 +133,7 @@ function httpHandler(req, res) {
       res.writeHead(200);
       res.end();
       break;
-
+q
     default:
   }
 }
