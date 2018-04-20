@@ -1,0 +1,11 @@
+/* Remove back ground and set font color  for diff items */
+.hljs-deletion {
+  background: transparent;
+  color: #900;
+
+}
+
+.hljs-addition {
+  background: transparent;
+  color: #009926;
+}
