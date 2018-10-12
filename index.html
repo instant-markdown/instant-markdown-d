@@ -16,25 +16,15 @@
   </style>
   <script src="/socket.io/socket.io.js"></script>
   <script>
-
-    var SCROLL_PADDING = 100;
-    var cumulativeOffset = function(element) {
-        var top = 0, left = 0;
-        do {
-            top += element.offsetTop  || 0;
-            left += element.offsetLeft || 0;
-            element = element.offsetParent;
-        } while(element);
-        return { top: top, left: left };
-    };
-
     var socket = io.connect('http://'+ window.location.host +'/');
     socket.on('connect', function () {
       socket.on('newContent', function(newHTML) {
         document.querySelector(".markdown-body").innerHTML = newHTML;
-        var marker = document.querySelector("#marker");
+        
+        // scroll to the hyperlink with id="marker"
+        let marker = document.getElementById("marker");
         if(marker) {
-          window.scrollTo(0, cumulativeOffset(marker).top - SCROLL_PADDING);
+          marker.scrollIntoView();
         }
       });
       socket.on('die', function(newHTML) {
