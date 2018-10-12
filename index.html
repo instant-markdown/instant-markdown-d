@@ -29,6 +29,12 @@
       setDisconnected(false);
       socket.on('newContent', function(newHTML) {
         document.querySelector(".markdown-body").innerHTML = newHTML;
+        
+        // scroll to the hyperlink with id="marker"
+        let marker = document.getElementById("marker");
+        if(marker) {
+          marker.scrollIntoView();
+        }
       });
       socket.on('die', function(newHTML) {
         window.open('', '_self', '');
