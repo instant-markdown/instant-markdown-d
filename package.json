@@ -10,9 +10,9 @@
     "instant-markdown-d": "./instant-markdown-d"
   },
   "dependencies": {
-    "highlight.js": "^8.4.0",
-    "markdown-it": "^3.0.3",
-    "send": "~0.1.0",
-    "socket.io": "^1.4.5"
+    "highlight.js": "^9.13.0",
+    "markdown-it": "^8.4.2",
+    "send": "~0.16.2",
+    "socket.io": "^2.1.1"
   }
 }
