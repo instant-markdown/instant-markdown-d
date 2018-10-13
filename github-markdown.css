@@ -31,7 +31,7 @@ td,th {
 
 .container {
     display: grid;
-    grid-template-columns: 2em 1fr 2em;
+    grid-template-columns: 0.5em 1fr 0.5em;
     grid-template-rows: 0fr  1fr 0fr;
     max-width: 1020px;
     margin-right: auto;
@@ -82,7 +82,7 @@ td,th {
 
 .repository-with-sidebar .repository-sidebar {
     float: right;
-    width: 38px
+    width: 38px;
 }
 
 .repository-with-sidebar .repository-sidebar .sidebar-button {
@@ -104,7 +104,7 @@ td,th {
 }
 
 .repository-with-sidebar .repository-sidebar .clone-url.open {
-    display: block
+    display: flex;
 }
 
 .repository-with-sidebar .repository-sidebar .clone-options {
@@ -121,9 +121,17 @@ td,th {
     cursor: pointer
 }
 
-.repository-with-sidebar .repository-content {
-    /* float: left; */
+.repository-with-sidebar, .repository-content {
+    float: left;
+    width: 100%;
 }
+
+@media (min-width: 1020px) {
+    .repository-with-sidebar, .repository-content {
+        width: 1020px;
+    }
+}
+
 
 .repository-with-sidebar.with-full-navigation .repository-content {
 }
@@ -246,12 +254,10 @@ td,th {
 }
 
 .markdown-body hr:before {
-  display: flex;
   content: "";
 }
 
 .markdown-body hr:after {
-  display: flex;
   clear: both;
   content: "";
 }
