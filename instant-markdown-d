@@ -7,9 +7,10 @@ var server = require('http').createServer(httpHandler),
     io = require('socket.io').listen(server),
     os = require('os'),
     send = require('send');
-var MarkdownItMathjax = require('markdown-it-mathjax');
+
 var mjpage = require('mathjax-node-page').mjpage;
 // var fs = require('fs');  // for debugging
+var enableMathJax = process.argv[2] === "--mathjax";
 
 // WARNING: By setting this environment variable, anyone on your network may
 // run arbitrary code in your browser and read arbitrary files in the working
@@ -37,24 +38,38 @@ var md = new MarkdownIt({
       return str;
     }
   }
-}).use(MarkdownItMathjax());
+});
 
-function mathJaxRender(newHtml) {
-  mjpage(newHtml, {
-      format: ["TeX"]
-  }, {
-      svg: true
-  }, function(data) {
-      // console.log(data); // resulting HTML string
-      // fs.writeFileSync('output.html', data, 'utf-8'); // debug
-      io.sockets.emit('newContent', data);
-  });
+if (enableMathJax) md.use(require('markdown-it-mathjax')());
+
+function mathJaxRenderEmit(newHtml) {
+  if(enableMathJax) {
+    mjpage(newHtml, {
+        // mjpageConfig
+        format: ["TeX"],
+        cssInline: false
+    }, {
+        // mjnodeConfig
+        html: true,
+        // mml: true,
+        // svg: true,
+        equationNumbers: "AMS",
+        speakText: false
+    }, function(data) {
+        // console.log(data); // resulting HTML string
+        // fs.writeFileSync('output.html', data, 'utf-8'); // debug
+        io.sockets.emit('newContent', data);
+    });
+  }
+  else {
+    io.sockets.emit('newContent', newHtml)
+  }
 }
 
 var lastWrittenMarkdown = '';
 function writeMarkdown(body) {
   lastWrittenMarkdown = md.render(body);
-  mathJaxRender(lastWrittenMarkdown);
+  mathJaxRenderEmit(lastWrittenMarkdown);
 }
 
 function readAllInput(input, callback) {
@@ -151,8 +166,8 @@ function httpHandler(req, res) {
 io.sockets.on('connection', function(sock){
   process.stdout.write('connection established!');
   if (lastWrittenMarkdown) {
-    // mathJaxRender(lastWrittenMarkdown);
-    sock.emit('newContent', lastWrittenMarkdown);
+    sock.emit('newContent', lastWrittenMarkdown);  // Quick preview
+    if (enableMathJax) mathJaxRenderEmit(lastWrittenMarkdown);
   }
 });
 
