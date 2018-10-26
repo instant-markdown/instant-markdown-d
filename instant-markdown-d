@@ -6,6 +6,7 @@ var server = require('http').createServer(httpHandler),
     exec = require('child_process').exec,
     io = require('socket.io').listen(server),
     os = require('os'),
+    fs = require('fs'),
     send = require('send');
 
 // WARNING: By setting this environment variable, anyone on your network may
@@ -103,9 +104,12 @@ function httpHandler(req, res) {
       var isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
       addSecurityHeaders(req, res, isIndexFile);
 
+      var cwd = process.cwd();
+      var mount = cwd && !fs.existsSync(__dirname + req.url) ? cwd : __dirname;
+
       // Otherwise serve the file from the directory this module is in
       send(req, req.url)
-        .root(__dirname)
+        .root(mount)
         .pipe(res);
       break;
 
