@@ -44,22 +44,32 @@ if (enableMathJax) md.use(require('markdown-it-mathjax')());
 
 function mathJaxRenderEmit(newHtml) {
   if(enableMathJax) {
-    mjpage(newHtml, {
-        // mjpageConfig
+    mjPageConfig = {
         format: ["TeX"],
-        cssInline: false
-    }, {
+        cssInline: false,
+    }
+
+    if (process.env.INSTANT_MARKDOWN_MATHJAX_FONTS) {
+      mjPageConfig.fontURL = process.env.INSTANT_MARKDOWN_MATHJAX_FONTS;
+    }
+
+    mjpage(
+      newHtml,
+      mjPageConfig,
+      {
         // mjnodeConfig
         html: true,
         // mml: true,
         // svg: true,
         equationNumbers: "AMS",
         speakText: false
-    }, function(data) {
-        // console.log(data); // resulting HTML string
-        // fs.writeFileSync('output.html', data, 'utf-8'); // debug
-        io.sockets.emit('newContent', data);
-    });
+      },
+      function(data) {
+          // console.log(data); // resulting HTML string
+          // fs.writeFileSync('output.html', data, 'utf-8'); // debug
+          io.sockets.emit('newContent', data);
+      }
+    );
   }
   else {
     io.sockets.emit('newContent', newHtml)
