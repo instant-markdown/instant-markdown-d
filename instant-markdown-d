@@ -42,28 +42,29 @@ var md = new MarkdownIt({
 
 if (enableMathJax) md.use(require('markdown-it-mathjax')());
 
+const mjPageConfig = {
+  format: ["TeX"],
+  cssInline: false,
+};
+
+if (process.env.INSTANT_MARKDOWN_MATHJAX_FONTS) {
+  mjPageConfig.fontURL = process.env.INSTANT_MARKDOWN_MATHJAX_FONTS;
+}
+
+const mjNodeConfig = {
+  html: true,
+  // mml: true,
+  // svg: true,
+  equationNumbers: "AMS",
+  speakText: false
+};
+
 function mathJaxRenderEmit(newHtml) {
   if(enableMathJax) {
-    mjPageConfig = {
-        format: ["TeX"],
-        cssInline: false,
-    }
-
-    if (process.env.INSTANT_MARKDOWN_MATHJAX_FONTS) {
-      mjPageConfig.fontURL = process.env.INSTANT_MARKDOWN_MATHJAX_FONTS;
-    }
-
     mjpage(
       newHtml,
       mjPageConfig,
-      {
-        // mjnodeConfig
-        html: true,
-        // mml: true,
-        // svg: true,
-        equationNumbers: "AMS",
-        speakText: false
-      },
+      mjNodeConfig,
       function(data) {
           // console.log(data); // resulting HTML string
           // fs.writeFileSync('output.html', data, 'utf-8'); // debug
