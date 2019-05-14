@@ -10,13 +10,14 @@
     "instant-markdown-d": "./instant-markdown-d"
   },
   "dependencies": {
-    "highlight.js": "^9.13.0",
+    "github-markdown-css": "^3.0.1",
+    "highlight.js": "^9.15.6",
     "markdown-it": "^8.4.2",
     "markdown-it-mathjax": "^2.0.0",
     "mathjax": "^2.7.5",
-    "mathjax-node-page": "^3.0.1",
+    "mathjax-node-page": "^3.0.2",
     "minimalist": "^1.0.0",
-    "send": "~0.16.2",
-    "socket.io": "^2.1.1"
+    "send": "~0.17.1",
+    "socket.io": "^2.2.0"
   }
 }

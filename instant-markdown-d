@@ -135,8 +135,7 @@ function httpHandler(req, res) {
       if (githubUrl) {
         addSecurityHeaders(req, res, false);
          // Serve the file out of the current working directory
-        send(req, githubUrl[1])
-         .root(process.cwd())
+        send(req, githubUrl[1], {root: process.cwd()})
          .pipe(res);
         return;
       }
@@ -148,8 +147,7 @@ function httpHandler(req, res) {
       let mount = cwd && !fs.existsSync(__dirname + req.url) ? cwd : __dirname;
 
       // Otherwise serve the file from the directory this module is in
-      send(req, req.url)
-        .root(mount)
+      send(req, req.url, {root: mount})
         .pipe(res);
       break;
 
