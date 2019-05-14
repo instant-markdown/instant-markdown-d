@@ -13,8 +13,9 @@
     "highlight.js": "^9.13.0",
     "markdown-it": "^8.4.2",
     "markdown-it-mathjax": "^2.0.0",
-    "mathjax-node-page": "^3.0.1",
     "mathjax": "^2.7.5",
+    "mathjax-node-page": "^3.0.1",
+    "minimalist": "^1.0.0",
     "send": "~0.16.2",
     "socket.io": "^2.1.1"
   }
