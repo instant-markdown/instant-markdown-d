@@ -11,7 +11,28 @@ const server = require('http').createServer(httpHandler),
 
 const mjpage = require('mathjax-node-page').mjpage;
 const taskLists = require('markdown-it-task-lists');
-const argv = require('minimist')(process.argv.slice(2));
+const argv = require('minimist')(process.argv.slice(2), {
+  string: 'browser',
+  alias: {V: 'version', h: 'help'},
+});
+
+if (argv.version) {
+  const version= require('./version');
+  console.log(version);
+}
+if (argv.help) {
+  console.log(`\
+Usage: instant-markdown-d [OPTIONS]
+
+Options:
+  --mathjax          Enable MathJax parsing
+  --browser BROWSER  Use a custom browser
+  -V, --version      Display version
+  -h, --help         Display help\
+  `);
+}
+if (argv.version || argv.help) process.exit(0);
+
 // console.dir(argv);
 // WARNING: By setting this environment variable, anyone on your network may
 // run arbitrary code in your browser and read arbitrary files in the working
@@ -185,7 +206,9 @@ io.sockets.on('connection', function(sock){
 
 
 function onListening() {
-  if (os.platform() === 'win32') {
+  if (argv.browser) {
+    exec(argv.browser + ' http://localhost:8090', function(error, stdout, stderr){});
+  } else if (os.platform() === 'win32') {
     exec('start /b http://localhost:8090', function(error, stdout, stderr){});
   } else if (os.platform() === 'darwin') {
     exec('open -g http://localhost:8090', function(error, stdout, stderr){});
