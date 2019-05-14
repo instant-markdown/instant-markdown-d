@@ -12,7 +12,8 @@ const server = require('http').createServer(httpHandler),
 const mjpage = require('mathjax-node-page').mjpage;
 const taskLists = require('markdown-it-task-lists');
 const argv = require('minimist')(process.argv.slice(2), {
-  string: 'browser',
+  string: ['browser'],
+  default: {port: 8090},
   alias: {V: 'version', h: 'help'},
 });
 
@@ -27,6 +28,7 @@ Usage: instant-markdown-d [OPTIONS]
 Options:
   --mathjax          Enable MathJax parsing
   --browser BROWSER  Use a custom browser
+  --port PORT        Use a custom port (default: 8090)
   -V, --version      Display version
   -h, --help         Display help\
   `);
@@ -39,10 +41,10 @@ if (argv.version || argv.help) process.exit(0);
 // directory of the open file!
 if (process.env.INSTANT_MARKDOWN_OPEN_TO_THE_WORLD) {
   // Listen on any interface.
-  server.listen(8090, onListening).once('error', onServerError);
+  server.listen(argv.port, onListening).once('error', onServerError);
 } else {
   // Listen locally.
-  server.listen(8090, '127.0.0.1', onListening).once('error', onServerError);
+  server.listen(argv.port, '127.0.0.1', onListening).once('error', onServerError);
 }
 
 let md = new MarkdownIt({
@@ -122,7 +124,7 @@ function addSecurityHeaders(req, res, isIndexFile) {
 
   // Cannot use 'self' because Chrome does not treat 'self' as http://host
   // when the sandbox directive is set.
-  let HTTP_HOST = req.headers.host || 'localhost:8090';
+  let HTTP_HOST = req.headers.host || 'localhost:' + argv.port;
   let CSP_SELF = 'http://' + HTTP_HOST;
 
   if (!process.env.INSTANT_MARKDOWN_ALLOW_UNSAFE_CONTENT) {
@@ -176,8 +178,8 @@ function httpHandler(req, res) {
     // case 'HEAD':
       // res.writeHead(200);
       // res.end();
-      // exec('open -g http://localhost:8090', function(error, stdout, stderr){
-        // http.request({port: 8090})
+      // exec('open -g http://localhost:' + argv.port, function(error, stdout, stderr){
+        // http.request({port: argv.port})
       // });
       // break;
 
@@ -206,15 +208,16 @@ io.sockets.on('connection', function(sock){
 
 
 function onListening() {
-  if (argv.browser) {
-    exec(argv.browser + ' http://localhost:8090', function(error, stdout, stderr){});
-  } else if (os.platform() === 'win32') {
-    exec('start /b http://localhost:8090', function(error, stdout, stderr){});
-  } else if (os.platform() === 'darwin') {
-    exec('open -g http://localhost:8090', function(error, stdout, stderr){});
-  } else { // assume unix/linux
-    exec('xdg-open http://localhost:8090', function(error, stdout, stderr){});
+  if (!argv.browser) {
+    if (os.platform() === 'win32') {
+      argv.browser = 'start /b';
+    } else if (os.platform() === 'darwin') {
+      argv.browser = 'open -g';
+    } else { // assume unix/linux
+      argv.browser = 'xdg-open ';
+    }
   }
+  exec(argv.browser + ' http://localhost:' + argv.port, function(error, stdout, stderr){});
   readAllInput(process.stdin, function(body) {
     writeMarkdown(body);
   });
@@ -227,7 +230,7 @@ function onServerError(e) {
       // Forward to existing instant-markdown-d server.
       require('http').request({
         hostname: 'localhost',
-        port: 8090,
+        port: argv.port,
         path: '/',
         method: 'PUT',
       }).end(body);
