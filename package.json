@@ -17,7 +17,7 @@
     "markdown-it-task-lists": "^2.1.1",
     "mathjax": "^2.7.5",
     "mathjax-node-page": "^3.0.2",
-    "minimalist": "^1.0.0",
+    "minimist": "^1.2.0",
     "send": "~0.17.1",
     "socket.io": "^2.2.0"
   }

@@ -11,8 +11,8 @@ const server = require('http').createServer(httpHandler),
 
 const mjpage = require('mathjax-node-page').mjpage;
 const taskLists = require('markdown-it-task-lists');
-const enableMathJax = process.argv[2] === "--mathjax";
-
+const argv = require('minimist')(process.argv.slice(2));
+// console.dir(argv);
 // WARNING: By setting this environment variable, anyone on your network may
 // run arbitrary code in your browser and read arbitrary files in the working
 // directory of the open file!
@@ -40,7 +40,7 @@ let md = new MarkdownIt({
   }
 }).use(taskLists);
 
-if (enableMathJax) md.use(require('markdown-it-mathjax')());
+if (argv.mathjax) md.use(require('markdown-it-mathjax')());
 
 const mjPageConfig = {
   format: ["TeX"],
@@ -60,7 +60,7 @@ const mjNodeConfig = {
 };
 
 function mathJaxRenderEmit(newHtml) {
-  if(enableMathJax) {
+  if(argv.mathjax) {
     mjpage(
       newHtml,
       mjPageConfig,
@@ -179,7 +179,7 @@ io.sockets.on('connection', function(sock){
   process.stdout.write('connection established!');
   if (lastWrittenMarkdown) {
     sock.emit('newContent', lastWrittenMarkdown);  // Quick preview
-    if (enableMathJax) mathJaxRenderEmit(lastWrittenMarkdown);
+    if (argv.mathjax) mathJaxRenderEmit(lastWrittenMarkdown);
   }
 });
 
