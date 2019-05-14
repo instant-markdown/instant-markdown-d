@@ -10,6 +10,7 @@ const server = require('http').createServer(httpHandler),
     send = require('send');
 
 const mjpage = require('mathjax-node-page').mjpage;
+const taskLists = require('markdown-it-task-lists');
 const enableMathJax = process.argv[2] === "--mathjax";
 
 // WARNING: By setting this environment variable, anyone on your network may
@@ -37,7 +38,7 @@ let md = new MarkdownIt({
       return str;
     }
   }
-});
+}).use(taskLists);
 
 if (enableMathJax) md.use(require('markdown-it-mathjax')());
 

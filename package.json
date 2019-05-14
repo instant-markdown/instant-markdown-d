@@ -14,6 +14,7 @@
     "highlight.js": "^9.15.6",
     "markdown-it": "^8.4.2",
     "markdown-it-mathjax": "^2.0.0",
+    "markdown-it-task-lists": "^2.1.1",
     "mathjax": "^2.7.5",
     "mathjax-node-page": "^3.0.2",
     "minimalist": "^1.0.0",
