@@ -29,3 +29,6 @@ Environment variables
 * `INSTANT_MARKDOWN_BLOCK_EXTERNAL=1` - by default, external resources such as
   images, stylesheets, frames and plugins are *allowed*. Use this setting to
   *block* such external content.
+
+* `INSTANT_MARKDOWN_MATHJAX_FONTS="/usr/share/mathjax/fonts/HTML-CSS/"` - to
+  serve fonts for Mathjax from a local directory.

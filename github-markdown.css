@@ -145,6 +145,7 @@ td,th {
   font-size: 16px;
   line-height: 1.6;
   word-wrap: break-word;
+  text-align: justify;
 }
 
 .markdown-body a {
