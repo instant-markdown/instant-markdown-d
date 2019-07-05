@@ -10,7 +10,6 @@ html {
 }
 
 body {
-    min-width: 1020px;
     font: 13px/1.4 Helvetica, arial, freesans, clean, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
     /* color: #333; */
     background-color: #fff;
@@ -31,20 +30,25 @@ td,th {
 }
 
 .container {
-    width: 980px;
+    display: grid;
+    grid-template-columns: 0.5em 1fr 0.5em;
+    grid-template-rows: 0fr  1fr 0fr;
+    max-width: 1020px;
     margin-right: auto;
     margin-left: auto
 }
 
 .container:before {
-    display: table;
     content: ""
 }
 
 .container:after {
-    display: table;
     clear: both;
     content: ""
+}
+
+.item {
+    display: flex;
 }
 
 .boxed-group {
@@ -68,19 +72,17 @@ td,th {
 }
 
 .repository-with-sidebar:before {
-    display: table;
     content: ""
 }
 
 .repository-with-sidebar:after {
-    display: table;
     clear: both;
     content: ""
 }
 
 .repository-with-sidebar .repository-sidebar {
     float: right;
-    width: 38px
+    width: 38px;
 }
 
 .repository-with-sidebar .repository-sidebar .sidebar-button {
@@ -102,7 +104,7 @@ td,th {
 }
 
 .repository-with-sidebar .repository-sidebar .clone-url.open {
-    display: block
+    display: flex;
 }
 
 .repository-with-sidebar .repository-sidebar .clone-options {
@@ -119,13 +121,19 @@ td,th {
     cursor: pointer
 }
 
-.repository-with-sidebar .repository-content {
-    /* float: left; */
-    width: 920px;
+.repository-with-sidebar, .repository-content {
+    float: left;
+    width: 100%;
 }
 
+@media (min-width: 1020px) {
+    .repository-with-sidebar, .repository-content {
+        width: 1020px;
+    }
+}
+
+
 .repository-with-sidebar.with-full-navigation .repository-content {
-    width: 790px;
 }
 
 .repository-with-sidebar.with-full-navigation .repository-sidebar {
@@ -247,12 +255,10 @@ td,th {
 }
 
 .markdown-body hr:before {
-  display: table;
   content: "";
 }
 
 .markdown-body hr:after {
-  display: table;
   clear: both;
   content: "";
 }
