@@ -1,15 +1,14 @@
 {
   "author": "Suan-Aik Yeo <yeosuanaik@gmail.com>",
   "name": "instant-markdown-d",
-  "repository": "https://github.com/suan/instant-markdown-d.git",
-  "description": "Instantly-updating Markdown Server",
-  "version": "0.2.0",
-  "license": "Apache-2.0",
-  "homepage": "https://github.com/suan/instant-markdown-d",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/suan/instant-markdown-d.git"
   },
+  "description": "Instantly-updating Markdown Server",
+  "version": "0.2.0",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/suan/instant-markdown-d",
   "engine": "node",
   "main": "instant-markdown-d",
   "preferGlobal": "true",
@@ -21,7 +20,6 @@
     "build": "genversion ./version.js"
   },
   "dependencies": {
-    "github-markdown-css": "^3.0.1",
     "highlight.js": "^9.15.6",
     "markdown-it": "^8.4.2",
     "markdown-it-mathjax": "^2.0.0",
