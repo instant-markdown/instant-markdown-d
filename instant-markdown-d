@@ -217,7 +217,7 @@ function onListening() {
       argv.browser = 'xdg-open ';
     }
   }
-  exec(argv.browser + ' http://localhost:' + argv.port, function(error, stdout, stderr){});
+  exec(argv.browser + ' http://localhost:' + argv.port + '/', function(error, stdout, stderr){});
   readAllInput(process.stdin, function(body) {
     writeMarkdown(body);
   });
