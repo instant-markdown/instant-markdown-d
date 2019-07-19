@@ -12,4 +12,4 @@ script:
   - instant-markdown-d --version
   - npm test &
   - sleep 10
-  - curl -X DELETE localhost:8090 2>&1
+  - curl --fail -X DELETE localhost:8090
