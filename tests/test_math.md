@@ -1,10 +1,12 @@
+![](images/test_img.png)
+
 ```python
 import this
 ```
 
 # Inline equations
 
-$\Sigma_{i=0}^\infty \frac{1}{n} = 2$ is a fact. However: 
+$\Sigma_{i=0}^\infty \frac{1}{n} = 2$ is a fact. However:
 
 $$\sin x = 12$$
 

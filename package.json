@@ -20,7 +20,7 @@
   "scripts": {
     "start": "./instant-markdown-d",
     "build": "genversion ./version.js",
-    "test": "cat tests/test_math.md | instant-markdown-d --mathjax --debug",
+    "test": "cd tests; cat test_math.md | instant-markdown-d --mathjax --debug",
     "stop": "curl -X DELETE -s -w 'status: %{http_code}' -m 3 localhost:8090"
   },
   "dependencies": {
