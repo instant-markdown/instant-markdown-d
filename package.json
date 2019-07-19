@@ -9,7 +9,9 @@
   "version": "0.2.0",
   "license": "Apache-2.0",
   "homepage": "https://github.com/suan/instant-markdown-d",
-  "engine": "node",
+  "engines": {
+    "node": ">=8.0.0"
+  },
   "main": "instant-markdown-d",
   "preferGlobal": "true",
   "bin": {
