@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - node
+  - lts/*
+  - "8"
+
+before_script:
+  - yarn build
+script:
+  - yarn test&
+  - sleep 5
+  - curl -X DELETE localhost:8090

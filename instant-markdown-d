@@ -13,13 +13,14 @@ const mjpage = require('mathjax-node-page').mjpage;
 const taskLists = require('markdown-it-task-lists');
 const argv = require('minimist')(process.argv.slice(2), {
   string: ['browser'],
-  default: {port: 8090},
+  default: {port: 8090, debug: false},
   alias: {V: 'version', h: 'help'},
 });
 
-if (argv.version) {
+if (argv.version || argv.debug) {
   const version= require('./version');
-  console.log(version);
+  console.log(`instant-mardown-d version: v${version}`);
+  console.log(`nodejs version: ${process.version}`);
 }
 if (argv.help) {
   console.log(`\
@@ -29,11 +30,14 @@ Options:
   --mathjax          Enable MathJax parsing
   --browser BROWSER  Use a custom browser
   --port PORT        Use a custom port (default: 8090)
+  --debug           Be verbose and do not open browser
   -V, --version      Display version
   -h, --help         Display help\
   `);
 }
 if (argv.version || argv.help) process.exit(0);
+
+if (argv.verbose) console.dir(argv);
 
 // console.dir(argv);
 // WARNING: By setting this environment variable, anyone on your network may
@@ -89,8 +93,11 @@ function mathJaxRenderEmit(newHtml) {
       mjPageConfig,
       mjNodeConfig,
       function(data) {
-          // console.log(data); // resulting HTML string
-          // fs.writeFileSync('output.html', data, 'utf-8'); // debug
+          if (argv.debug) {
+            console.log("Rendered html saved as debug.html")
+            // console.log(data); // resulting HTML string
+            fs.writeFileSync('debug.html', data, 'utf-8'); // debug
+          }
           io.sockets.emit('newContent', data);
       }
     );
@@ -214,10 +221,15 @@ function onListening() {
     } else if (os.platform() === 'darwin') {
       argv.browser = 'open -g';
     } else { // assume unix/linux
-      argv.browser = 'xdg-open ';
+      argv.browser = 'xdg-open';
     }
   }
-  exec(argv.browser + ' http://localhost:' + argv.port + '/', function(error, stdout, stderr){});
+  let cmd = argv.browser + ' http://localhost:' + argv.port + '/';
+  if (argv.debug) {
+    console.log("Run the following to manually open browser: \n    " + cmd);
+  } else {
+    exec(cmd, function(error, stdout, stderr){});
+  }
   readAllInput(process.stdin, function(body) {
     writeMarkdown(body);
   });
