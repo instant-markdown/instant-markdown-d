@@ -18,7 +18,7 @@
   "scripts": {
     "start": "./instant-markdown-d",
     "build": "genversion ./version.js",
-    "test": "cat tests/test_math.md | npx instant-markdown-d --mathjax --debug"
+    "test": "cat tests/test_math.md | instant-markdown-d --mathjax --debug"
   },
   "dependencies": {
     "highlight.js": "^9.15.6",
