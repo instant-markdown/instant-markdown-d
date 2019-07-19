@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+  - node
+  - lts/*
+  - "8"
+
+install:
+  - npm install -g .
+before_script:
+  - npm run-script build
+script:
+  - instant-markdown-d --version
+  - npm test &
+  - sleep 5
+  - npm stop

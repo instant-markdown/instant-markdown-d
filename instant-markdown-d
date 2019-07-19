@@ -1,29 +1,57 @@
 #!/usr/bin/env node
-
-var MarkdownIt = require('markdown-it');
-var hljs = require('highlight.js');
-var server = require('http').createServer(httpHandler),
+"use strict";
+const MarkdownIt = require('markdown-it');
+const hljs = require('highlight.js');
+const server = require('http').createServer(httpHandler),
     exec = require('child_process').exec,
     io = require('socket.io').listen(server),
     os = require('os'),
+    fs = require('fs'),
     send = require('send');
 
-var mjpage = require('mathjax-node-page').mjpage;
-// var fs = require('fs');  // for debugging
-var enableMathJax = process.argv[2] === "--mathjax";
+const mjpage = require('mathjax-node-page').mjpage;
+const taskLists = require('markdown-it-task-lists');
+const argv = require('minimist')(process.argv.slice(2), {
+  string: ['browser'],
+  default: {port: 8090, debug: false},
+  alias: {V: 'version', h: 'help'},
+});
 
+if (argv.version || argv.debug) {
+  const version= require('./version');
+  console.log(`instant-mardown-d version: v${version}`);
+  console.log(`nodejs version: ${process.version}`);
+}
+if (argv.help) {
+  console.log(`\
+Usage: instant-markdown-d [OPTIONS]
+
+Options:
+  --mathjax          Enable MathJax parsing
+  --browser BROWSER  Use a custom browser
+  --port PORT        Use a custom port (default: 8090)
+  --debug           Be verbose and do not open browser
+  -V, --version      Display version
+  -h, --help         Display help\
+  `);
+}
+if (argv.version || argv.help) process.exit(0);
+
+if (argv.verbose) console.dir(argv);
+
+// console.dir(argv);
 // WARNING: By setting this environment variable, anyone on your network may
 // run arbitrary code in your browser and read arbitrary files in the working
 // directory of the open file!
 if (process.env.INSTANT_MARKDOWN_OPEN_TO_THE_WORLD) {
   // Listen on any interface.
-  server.listen(8090, onListening).once('error', onServerError);
+  server.listen(argv.port, onListening).once('error', onServerError);
 } else {
   // Listen locally.
-  server.listen(8090, '127.0.0.1', onListening).once('error', onServerError);
+  server.listen(argv.port, '127.0.0.1', onListening).once('error', onServerError);
 }
 
-var md = new MarkdownIt({
+let md = new MarkdownIt({
   html: true,
   linkify: true,
   highlight: function(str, lang) {
@@ -37,9 +65,9 @@ var md = new MarkdownIt({
       return str;
     }
   }
-});
+}).use(taskLists);
 
-if (enableMathJax) md.use(require('markdown-it-mathjax')());
+if (argv.mathjax) md.use(require('markdown-it-mathjax')());
 
 const mjPageConfig = {
   format: ["TeX"],
@@ -59,14 +87,17 @@ const mjNodeConfig = {
 };
 
 function mathJaxRenderEmit(newHtml) {
-  if(enableMathJax) {
+  if(argv.mathjax) {
     mjpage(
       newHtml,
       mjPageConfig,
       mjNodeConfig,
       function(data) {
-          // console.log(data); // resulting HTML string
-          // fs.writeFileSync('output.html', data, 'utf-8'); // debug
+          if (argv.debug) {
+            console.log("Rendered html saved as debug.html")
+            // console.log(data); // resulting HTML string
+            fs.writeFileSync('debug.html', data, 'utf-8'); // debug
+          }
           io.sockets.emit('newContent', data);
       }
     );
@@ -76,14 +107,14 @@ function mathJaxRenderEmit(newHtml) {
   }
 }
 
-var lastWrittenMarkdown = '';
+let lastWrittenMarkdown = '';
 function writeMarkdown(body) {
   lastWrittenMarkdown = md.render(body);
   mathJaxRenderEmit(lastWrittenMarkdown);
 }
 
 function readAllInput(input, callback) {
-  var body = '';
+  let body = '';
   input.on('data', function(data) {
     body += data;
     if (body.length > 1e6) {
@@ -96,12 +127,12 @@ function readAllInput(input, callback) {
 }
 
 function addSecurityHeaders(req, res, isIndexFile) {
-  var csp = [];
+  let csp = [];
 
   // Cannot use 'self' because Chrome does not treat 'self' as http://host
   // when the sandbox directive is set.
-  var HTTP_HOST = req.headers.host || 'localhost:8090';
-  var CSP_SELF = 'http://' + HTTP_HOST;
+  let HTTP_HOST = req.headers.host || 'localhost:' + argv.port;
+  let CSP_SELF = 'http://' + HTTP_HOST;
 
   if (!process.env.INSTANT_MARKDOWN_ALLOW_UNSAFE_CONTENT) {
     if (isIndexFile) {
@@ -131,35 +162,39 @@ function httpHandler(req, res) {
   {
     case 'GET':
       // Example: /my-repo/raw/master/sub-dir/some.png
-      var githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
+      let githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
       if (githubUrl) {
         addSecurityHeaders(req, res, false);
          // Serve the file out of the current working directory
-        send(req, githubUrl[1])
-         .root(process.cwd())
+        send(req, githubUrl[1], {root: process.cwd()})
          .pipe(res);
         return;
       }
 
-      var isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
+      let isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
       addSecurityHeaders(req, res, isIndexFile);
 
+      let cwd = process.cwd();
+      let mount = cwd && !fs.existsSync(__dirname + req.url) ? cwd : __dirname;
+
       // Otherwise serve the file from the directory this module is in
-      send(req, req.url)
-        .root(__dirname)
+      send(req, req.url, {root: mount})
         .pipe(res);
       break;
 
     // case 'HEAD':
       // res.writeHead(200);
       // res.end();
-      // exec('open -g http://localhost:8090', function(error, stdout, stderr){
-        // http.request({port: 8090})
+      // exec('open -g http://localhost:' + argv.port, function(error, stdout, stderr){
+        // http.request({port: argv.port})
       // });
       // break;
 
     case 'DELETE':
+      res.setHeader('Content-Type', 'text/plain');
+      res.writeHead(204, { 'Content-Type': 'text/plain' });
       io.sockets.emit('die');
+      res.end('ok')
       process.exit();
       break;
 
@@ -177,18 +212,26 @@ io.sockets.on('connection', function(sock){
   process.stdout.write('connection established!');
   if (lastWrittenMarkdown) {
     sock.emit('newContent', lastWrittenMarkdown);  // Quick preview
-    if (enableMathJax) mathJaxRenderEmit(lastWrittenMarkdown);
+    if (argv.mathjax) mathJaxRenderEmit(lastWrittenMarkdown);
   }
 });
 
 
 function onListening() {
-  if (os.platform() === 'win32') {
-    exec('start /b http://localhost:8090', function(error, stdout, stderr){});
-  } else if (os.platform() === 'darwin') {
-    exec('open -g http://localhost:8090', function(error, stdout, stderr){});
-  } else { // assume unix/linux
-    exec('xdg-open http://localhost:8090/', function(error, stdout, stderr){});
+  if (!argv.browser) {
+    if (os.platform() === 'win32') {
+      argv.browser = 'start /b';
+    } else if (os.platform() === 'darwin') {
+      argv.browser = 'open -g';
+    } else { // assume unix/linux
+      argv.browser = 'xdg-open';
+    }
+  }
+  let cmd = argv.browser + ' http://localhost:' + argv.port + '/';
+  if (argv.debug) {
+    console.log("Run the following to manually open browser: \n    " + cmd);
+  } else {
+    exec(cmd, function(error, stdout, stderr){});
   }
   readAllInput(process.stdin, function(body) {
     writeMarkdown(body);
@@ -202,7 +245,7 @@ function onServerError(e) {
       // Forward to existing instant-markdown-d server.
       require('http').request({
         hostname: 'localhost',
-        port: 8090,
+        port: argv.port,
         path: '/',
         method: 'PUT',
       }).end(body);

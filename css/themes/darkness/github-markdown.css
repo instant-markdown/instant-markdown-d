@@ -1,0 +1,9 @@
+/* Set black background for code block */
+.markdown-body {
+  font-family: serif;
+}
+.markdown-body .highlight pre,
+.markdown-body pre {
+  color: #fff;
+  background-color: #18171b;
+}
