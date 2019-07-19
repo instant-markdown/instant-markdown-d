@@ -6,7 +6,7 @@
     "url": "git+https://github.com/suan/instant-markdown-d.git"
   },
   "description": "Instantly-updating Markdown Server",
-  "version": "0.2.0-rc1",
+  "version": "0.2.0-rc.1",
   "license": "Apache-2.0",
   "homepage": "https://github.com/suan/instant-markdown-d",
   "engines": {
@@ -22,7 +22,7 @@
     "build": "genversion ./version.js",
     "test": "cd tests; cat test_math.md | instant-markdown-d --mathjax --debug",
     "stop": "curl -X DELETE -s -w 'status: %{http_code}' -m 3 localhost:8090",
-    "prepublish": "npm run build; git clean;"
+    "prepare": "npm run build; git clean -f;"
   },
   "dependencies": {
     "highlight.js": "^9.15.6",
