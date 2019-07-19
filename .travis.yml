@@ -11,6 +11,5 @@ before_script:
 script:
   - instant-markdown-d --version
   - npm test &
-  - sleep 10
-  - curl -s -w %{http_code} -X DELETE localhost:8090 -o response.log
-  - cat response.log
+  - sleep 5
+  - npm stop

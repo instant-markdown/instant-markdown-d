@@ -191,7 +191,10 @@ function httpHandler(req, res) {
       // break;
 
     case 'DELETE':
+      res.setHeader('Content-Type', 'text/plain');
+      res.writeHead(204, { 'Content-Type': 'text/plain' });
       io.sockets.emit('die');
+      res.end('ok')
       process.exit();
       break;
 
