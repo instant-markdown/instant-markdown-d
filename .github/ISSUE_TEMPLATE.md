@@ -11,8 +11,8 @@
 
 ## Provide the output of test command (required)
 
-Run `npm test&; sleep 5; npm stop` or at least equivalent of `cat
-tests/test_math.md | instant-markdown-d --mathjax --debug` and paste the
+Run `npm test&; sleep 5; npm stop` or at least equivalent of
+`cd tests; cat test_math.md | instant-markdown-d --mathjax --debug` and paste the
 console output here:
 
 ```sh

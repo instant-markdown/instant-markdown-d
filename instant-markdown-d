@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 "use strict";
+// node builtins
+const process = require('process');
+
+
 const MarkdownIt = require('markdown-it');
 const hljs = require('highlight.js');
 const server = require('http').createServer(httpHandler),
@@ -30,7 +34,7 @@ Options:
   --mathjax          Enable MathJax parsing
   --browser BROWSER  Use a custom browser
   --port PORT        Use a custom port (default: 8090)
-  --debug           Be verbose and do not open browser
+  --debug            Be verbose and do not open browser
   -V, --version      Display version
   -h, --help         Display help\
   `);

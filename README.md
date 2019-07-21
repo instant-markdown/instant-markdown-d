@@ -4,7 +4,17 @@ instant-markdown-d is a small Node.js server that enables instant compilation an
 
 Installation
 ------------
+
+Install the mini-server by running either:
+
 - `[sudo] npm -g install instant-markdown-d`
+
+or pre-release version
+
+- `[sudo] npm -g install instant-markdown-d@next`
+
+see [vim-instant-markdown](https://github.com/suan/vim-instant-markdown) for
+Vim / Neovim integration.
 
 REST API
 --------
