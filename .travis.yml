@@ -5,11 +5,9 @@ node_js:
   - "8"
 
 install:
-  - npm install -g .
-before_script:
-  - npm run-script build
+  - npm install --only=dev
 script:
-  - instant-markdown-d --version
+  - npx instant-markdown-d --version
   - npm test &
   - sleep 5
   - npm stop
