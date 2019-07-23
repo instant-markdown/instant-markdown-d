@@ -18,11 +18,10 @@
     "instant-markdown-d": "./instant-markdown-d"
   },
   "scripts": {
-    "start": "npx instant-markdown-d",
-    "build": "genversion ./version.js",
-    "test": "cd tests; cat test_math.md | npx instant-markdown-d --mathjax --debug",
+    "start": "instant-markdown-d",
+    "test": "cd tests; cat test_math.md | instant-markdown-d --mathjax --debug",
     "stop": "curl -X DELETE -s -w 'status: %{http_code}' -m 3 localhost:8090",
-    "prepare": "npm run build; git clean -f;"
+    "prepare": "genversion ./version.js; git clean -f;"
   },
   "dependencies": {
     "highlight.js": "^9.15.6",
