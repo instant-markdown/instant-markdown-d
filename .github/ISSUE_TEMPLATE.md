@@ -5,15 +5,34 @@
 
 ## Environment Information
 
- * OS:
+ * OS and version:
  * Vim / Neovim version:
- * Browser:
+ * Browser and version:
 
 ## Provide the output of test command (required)
 
-Run `npm test&; sleep 5; npm stop` or at least equivalent of
-`cd tests; cat test_math.md | instant-markdown-d --mathjax --debug` and paste the
-console output here:
+Run the test by installing the master version (instructions valid for
+Linux / macOS):
+
+```sh
+export NPM_PACKAGES=$HOME/.npm-packages
+export PATH="$NPM_PACKAGES/bin:$PATH"
+export NODE_PATH="$NPM_PACKAGES/lib/node_modules:$NODE_PATH"
+
+git clone https://github.com/suan/instant-markdown-d
+cd instant-markdown-d
+npm install -g .
+npm test&; sleep 5; npm stop
+```
+
+If the above doesn't work, at least run
+
+```sh
+curl -LO https://raw.githubusercontent.com/suan/instant-markdown-d/master/tests/test_math.md
+cat test_math.md | instant-markdown-d --mathjax --debug
+```
+
+and paste the console output here:
 
 ```sh
 
