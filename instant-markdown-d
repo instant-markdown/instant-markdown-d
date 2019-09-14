@@ -203,9 +203,11 @@ function httpHandler(req, res) {
       break;
 
     case 'PUT':
-      readAllInput(req, writeMarkdown);
-      res.writeHead(200);
-      res.end();
+      readAllInput(req, function(body){
+        writeMarkdown(body);
+        res.writeHead(200);
+        res.end();
+      });
       break;
 
     default:
