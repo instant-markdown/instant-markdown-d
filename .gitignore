@@ -3,3 +3,6 @@ package-lock.json
 yarn.lock
 yarn*.log
 debug.html
+
+# packages
+*.tgz

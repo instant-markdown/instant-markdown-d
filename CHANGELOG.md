@@ -1,4 +1,8 @@
-# 0.2.0.rc1 (2017-07-19)
+# 0.2.0.rc2 (2019-10-15)
+
+* Bug fix: PUT request and response for node>10
+
+# 0.2.0.rc1 (2019-07-21)
 
 * Optional MathJax support
 * Apache 2.0 license

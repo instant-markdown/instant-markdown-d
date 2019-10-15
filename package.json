@@ -6,7 +6,7 @@
     "url": "git+https://github.com/suan/instant-markdown-d.git"
   },
   "description": "Instantly-updating Markdown Server",
-  "version": "0.2.0-rc.1",
+  "version": "0.2.0-rc.2",
   "license": "Apache-2.0",
   "homepage": "https://github.com/suan/instant-markdown-d",
   "engines": {
