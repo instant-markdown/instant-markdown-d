@@ -23,7 +23,7 @@ const argv = require('minimist')(process.argv.slice(2), {
 
 if (argv.version || argv.debug) {
   const version= require('./version');
-  console.log(`instant-mardown-d version: v${version}`);
+  console.log(`instant-markdown-d version: v${version}`);
   console.log(`nodejs version: ${process.version}`);
 }
 if (argv.help) {
