@@ -41,7 +41,7 @@ Options:
 }
 if (argv.version || argv.help) process.exit(0);
 
-if (argv.verbose) console.dir(argv);
+if (argv.debug) console.dir(argv);
 
 // console.dir(argv);
 // WARNING: By setting this environment variable, anyone on your network may
