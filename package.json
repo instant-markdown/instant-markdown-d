@@ -3,25 +3,25 @@
   "name": "instant-markdown-d",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/suan/instant-markdown-d.git"
+    "url": "git+https://github.com/instant-markdown/instant-markdown-d.git"
   },
   "description": "Instantly-updating Markdown Server",
   "version": "0.2.0-rc.2",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/suan/instant-markdown-d",
+  "homepage": "https://github.com/instant-markdown/instant-markdown-d",
   "engines": {
     "node": ">=8.0.0"
   },
-  "main": "instant-markdown-d",
+  "main": "./src/cli.js",
   "preferGlobal": "true",
   "bin": {
-    "instant-markdown-d": "./instant-markdown-d"
+    "instant-markdown-d": "./src/cli.js"
   },
   "scripts": {
     "start": "instant-markdown-d",
     "test": "cat tests/test_math.md | instant-markdown-d --mathjax --debug",
     "stop": "curl -X DELETE -s -w 'status: %{http_code}' -m 3 localhost:8090",
-    "prepare": "genversion ./version.js; git clean -f;"
+    "prepare": "genversion ./src/version.js; git clean -f;"
   },
   "dependencies": {
     "highlight.js": "^9.15.6",
