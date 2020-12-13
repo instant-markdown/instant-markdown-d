@@ -31,12 +31,17 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install & verify
-      run: |
-        npm install
-        npx instant-markdown-d --version
+    - name: Install
+      run: npm install
+    - name: Link globally on POSIX
+      run: sudo npm link
+      if: ${{ matrix.os != 'windows-latest' }}
+    - name: Link globally on Windows
+      run: npm link
+      if: ${{ matrix.os == 'windows-latest' }}
     - name: Test
       run: |
+        npx --no-install instant-markdown-d --version
         npm test &
         sleep 5
         npm stop
