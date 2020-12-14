@@ -24,13 +24,13 @@
     "prepare": "genversion ./src/version.js; git clean -f;"
   },
   "dependencies": {
-    "highlight.js": "^9.15.6",
+    "highlight.js": "^10.4.1",
     "markdown-it": "^8.4.2",
     "markdown-it-mathjax": "^2.0.0",
     "markdown-it-task-lists": "^2.1.1",
     "mathjax": "^2.7.5",
     "mathjax-node-page": "^3.0.2",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.5",
     "send": "~0.17.1",
     "socket.io": "^2.2.0"
   },
