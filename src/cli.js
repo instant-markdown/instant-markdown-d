@@ -8,7 +8,7 @@ const MarkdownIt = require('markdown-it');
 const hljs = require('highlight.js');
 const server = require('http').createServer(httpHandler),
     exec = require('child_process').exec,
-    io = require('socket.io').listen(server),
+    io = require('socket.io')(server),
     os = require('os'),
     fs = require('fs'),
     send = require('send');
@@ -102,12 +102,16 @@ function mathJaxRenderEmit(newHtml) {
             // console.log(data); // resulting HTML string
             fs.writeFileSync('debug.html', data, 'utf-8'); // debug
           }
-          io.sockets.emit('newContent', data);
+          io.emit('newContent', data);
       }
     );
   }
   else {
-    io.sockets.emit('newContent', newHtml)
+    io.emit('newContent', newHtml)
+  }
+  if (argv.debug) {
+    console.debug('Emitting new data');
+    console.debug(newHtml); // resulting HTML string
   }
 }
 
@@ -162,6 +166,7 @@ function addSecurityHeaders(req, res, isIndexFile) {
 }
 
 function httpHandler(req, res) {
+  if (argv.debug) console.debug("Received %s request", req.method);
   switch(req.method)
   {
     case 'GET':
@@ -176,10 +181,15 @@ function httpHandler(req, res) {
       }
 
       let isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
+      if (!isIndexFile) {
+        throw new Error('Template index.html not found');
+      }
       addSecurityHeaders(req, res, isIndexFile);
 
       let cwd = process.cwd();
       let mount = cwd && !fs.existsSync(__dirname + req.url) ? cwd : __dirname;
+
+      if (argv.debug) console.debug("Serving with root directory %s", mount);
 
       // Otherwise serve the file from the directory this module is in
       send(req, req.url, {root: mount})
@@ -197,7 +207,7 @@ function httpHandler(req, res) {
     case 'DELETE':
       res.setHeader('Content-Type', 'text/plain');
       res.writeHead(204, { 'Content-Type': 'text/plain' });
-      io.sockets.emit('die');
+      io.emit('die');
       res.end('ok')
       process.exit();
       break;
@@ -214,7 +224,7 @@ function httpHandler(req, res) {
   }
 }
 
-io.sockets.on('connection', function(sock){
+io.on('connection', function(sock){
   process.stdout.write('connection established!');
   if (lastWrittenMarkdown) {
     sock.emit('newContent', lastWrittenMarkdown);  // Quick preview
@@ -237,9 +247,19 @@ function onListening() {
   if (argv.debug) {
     console.log("Run the following to manually open browser: \n    " + cmd);
   } else {
-    exec(cmd, function(error, stdout, stderr){});
+    exec(cmd, function(error, stdout, stderr){
+      if (error) {
+        console.error(`error while launching browser: ${error}`);
+        throw error;
+        // return;
+      } else if (argv.debug) {
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+      }
+    });
   }
   readAllInput(process.stdin, function(body) {
+    if (argv.debug) console.debug("Processing stdin -> markdown");
     writeMarkdown(body);
   });
   process.stdin.resume();
