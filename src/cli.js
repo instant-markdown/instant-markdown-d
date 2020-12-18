@@ -5,7 +5,8 @@ const process = require('process'),
   server = require('http').createServer(httpHandler),
   exec = require('child_process').exec,
   os = require('os'),
-  fs = require('fs');
+  fs = require('fs'),
+  path = require('path');
 
 const MarkdownIt = require('markdown-it'),
   hljs = require('highlight.js'),
@@ -166,29 +167,32 @@ function addSecurityHeaders(req, res, isIndexFile) {
 
 function httpHandler(req, res) {
   if (argv.debug) console.debug("Received %s request", req.method);
+
+  let githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
+  let isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
+  let pkgRoot = path.dirname(__dirname);
+  let cwd = process.cwd();
+  let mount = cwd && !fs.existsSync(pkgRoot + req.url) ? cwd : pkgRoot;
+
   switch(req.method)
   {
     case 'GET':
       // Example: /my-repo/raw/master/sub-dir/some.png
-      let githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
       if (githubUrl) {
         addSecurityHeaders(req, res, false);
          // Serve the file out of the current working directory
-        send(req, githubUrl[1], {root: process.cwd()})
+        send(req, githubUrl[1], {root: cwd})
          .pipe(res);
         return;
       }
-
-      let isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
-      if (!isIndexFile) {
-        throw new Error('Template index.html not found');
-      }
       addSecurityHeaders(req, res, isIndexFile);
-
-      let cwd = process.cwd();
-      let mount = cwd && !fs.existsSync(__dirname + req.url) ? cwd : __dirname;
-
-      if (argv.debug) console.debug("Serving with root directory %s", mount);
+      if (argv.debug) {
+        console.debug("Serving with root directory %s", mount);
+        let file = `${pkgRoot}/index.html`;
+        fs.access(file, fs.constants.R_OK, (err) => {
+          if (err) console.error(`${file} is not readable`);
+        });
+      }
 
       // Otherwise serve the file from the directory this module is in
       send(req, req.url, {root: mount})
