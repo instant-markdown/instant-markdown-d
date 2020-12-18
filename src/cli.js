@@ -1,17 +1,16 @@
 #!/usr/bin/env node
 "use strict";
 // node builtins
-const process = require('process');
+const process = require('process'),
+  server = require('http').createServer(httpHandler),
+  exec = require('child_process').exec,
+  os = require('os'),
+  fs = require('fs');
 
-
-const MarkdownIt = require('markdown-it');
-const hljs = require('highlight.js');
-const server = require('http').createServer(httpHandler),
-    exec = require('child_process').exec,
-    io = require('socket.io')(server),
-    os = require('os'),
-    fs = require('fs'),
-    send = require('send');
+const MarkdownIt = require('markdown-it'),
+  hljs = require('highlight.js'),
+  io = require('socket.io')(server),
+  send = require('send');
 
 const mjpage = require('mathjax-node-page').mjpage;
 const taskLists = require('markdown-it-task-lists');
@@ -99,7 +98,7 @@ function mathJaxRenderEmit(newHtml) {
       function(data) {
           if (argv.debug) {
             console.log("Rendered html saved as debug.html")
-            // console.log(data); // resulting HTML string
+            // console.debug(data); // resulting HTML string
             fs.writeFileSync('debug.html', data, 'utf-8'); // debug
           }
           io.emit('newContent', data);
@@ -111,7 +110,7 @@ function mathJaxRenderEmit(newHtml) {
   }
   if (argv.debug) {
     console.debug('Emitting new data');
-    console.debug(newHtml); // resulting HTML string
+    // console.debug(newHtml); // resulting HTML string
   }
 }
 
