@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 "use strict";
 // node builtins
-const process = require('process');
+const process = require('process'),
+  server = require('http').createServer(httpHandler),
+  exec = require('child_process').exec,
+  os = require('os'),
+  fs = require('fs'),
+  path = require('path');
 
-
-const MarkdownIt = require('markdown-it');
-const hljs = require('highlight.js');
-const server = require('http').createServer(httpHandler),
-    exec = require('child_process').exec,
-    io = require('socket.io').listen(server),
-    os = require('os'),
-    fs = require('fs'),
-    send = require('send');
+const MarkdownIt = require('markdown-it'),
+  hljs = require('highlight.js'),
+  io = require('socket.io')(server),
+  send = require('send');
 
 const mjpage = require('mathjax-node-page').mjpage;
 const taskLists = require('markdown-it-task-lists');
@@ -41,7 +41,7 @@ Options:
 }
 if (argv.version || argv.help) process.exit(0);
 
-if (argv.verbose) console.dir(argv);
+if (argv.debug) console.dir(argv);
 
 // console.dir(argv);
 // WARNING: By setting this environment variable, anyone on your network may
@@ -99,15 +99,19 @@ function mathJaxRenderEmit(newHtml) {
       function(data) {
           if (argv.debug) {
             console.log("Rendered html saved as debug.html")
-            // console.log(data); // resulting HTML string
+            // console.debug(data); // resulting HTML string
             fs.writeFileSync('debug.html', data, 'utf-8'); // debug
           }
-          io.sockets.emit('newContent', data);
+          io.emit('newContent', data);
       }
     );
   }
   else {
-    io.sockets.emit('newContent', newHtml)
+    io.emit('newContent', newHtml)
+  }
+  if (argv.debug) {
+    console.debug('Emitting new data');
+    // console.debug(newHtml); // resulting HTML string
   }
 }
 
@@ -162,24 +166,33 @@ function addSecurityHeaders(req, res, isIndexFile) {
 }
 
 function httpHandler(req, res) {
+  if (argv.debug) console.debug("Received %s request", req.method);
+
+  let githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
+  let isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
+  let pkgRoot = path.dirname(__dirname);
+  let cwd = process.cwd();
+  let mount = cwd && !fs.existsSync(pkgRoot + req.url) ? cwd : pkgRoot;
+
   switch(req.method)
   {
     case 'GET':
       // Example: /my-repo/raw/master/sub-dir/some.png
-      let githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
       if (githubUrl) {
         addSecurityHeaders(req, res, false);
          // Serve the file out of the current working directory
-        send(req, githubUrl[1], {root: process.cwd()})
+        send(req, githubUrl[1], {root: cwd})
          .pipe(res);
         return;
       }
-
-      let isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
       addSecurityHeaders(req, res, isIndexFile);
-
-      let cwd = process.cwd();
-      let mount = cwd && !fs.existsSync(__dirname + req.url) ? cwd : __dirname;
+      if (argv.debug) {
+        console.debug("Serving with root directory %s", mount);
+        let file = `${pkgRoot}/index.html`;
+        fs.access(file, fs.constants.R_OK, (err) => {
+          if (err) console.error(`${file} is not readable`);
+        });
+      }
 
       // Otherwise serve the file from the directory this module is in
       send(req, req.url, {root: mount})
@@ -197,7 +210,7 @@ function httpHandler(req, res) {
     case 'DELETE':
       res.setHeader('Content-Type', 'text/plain');
       res.writeHead(204, { 'Content-Type': 'text/plain' });
-      io.sockets.emit('die');
+      io.emit('die');
       res.end('ok')
       process.exit();
       break;
@@ -214,7 +227,7 @@ function httpHandler(req, res) {
   }
 }
 
-io.sockets.on('connection', function(sock){
+io.on('connection', function(sock){
   process.stdout.write('connection established!');
   if (lastWrittenMarkdown) {
     sock.emit('newContent', lastWrittenMarkdown);  // Quick preview
@@ -237,9 +250,19 @@ function onListening() {
   if (argv.debug) {
     console.log("Run the following to manually open browser: \n    " + cmd);
   } else {
-    exec(cmd, function(error, stdout, stderr){});
+    exec(cmd, function(error, stdout, stderr){
+      if (error) {
+        console.error(`error while launching browser: ${error}`);
+        throw error;
+        // return;
+      } else if (argv.debug) {
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+      }
+    });
   }
   readAllInput(process.stdin, function(body) {
+    if (argv.debug) console.debug("Processing stdin -> markdown");
     writeMarkdown(body);
   });
   process.stdin.resume();

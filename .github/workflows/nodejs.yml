@@ -1,26 +1,47 @@
-name: Node CI
+name: Node.js
 
-on: [push]
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        node-version: [8.x, 10.x, 12.x]
-
+        os:
+          - ubuntu-latest
+        node_version:
+          - 8
+          - 10
+          - 12
+          - 14
+        include:
+          - os: windows-latest
+            node_version: 14
+          - os: macos-latest
+            node_version: 14
     steps:
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: npm install, build, and test
+    - name: Install
+      run: npm install
+    - name: Link globally on POSIX
+      run: sudo npm link
+      if: ${{ matrix.os != 'windows-latest' }}
+    - name: Link globally on Windows
+      run: npm link
+      if: ${{ matrix.os == 'windows-latest' }}
+    - name: Test
       run: |
-        npm install -g .
-        npx instant-markdown-d --version
+        npx --no-install instant-markdown-d --version
         npm test &
         sleep 5
         npm stop
