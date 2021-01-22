@@ -72,6 +72,7 @@ let md = new MarkdownIt({
 }).use(taskLists);
 
 if (argv.mathjax) md.use(require('markdown-it-mathjax')());
+if (argv.mermaid) md.use(require('markdown-it-textual-uml'));
 
 const mjPageConfig = {
   format: ["TeX"],

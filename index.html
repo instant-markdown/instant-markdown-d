@@ -23,6 +23,7 @@
       color: red;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     var socket = io.connect('http://'+ window.location.host +'/');
@@ -36,6 +37,7 @@
         if(marker) {
           marker.scrollIntoView();
         }
+        mermaid.init()
       });
       socket.on('die', function(newHTML) {
         window.open('', '_self', '');
