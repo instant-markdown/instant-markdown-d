@@ -244,7 +244,9 @@ function onListening() {
       argv.browser = 'start /b';
     } else if (os.platform() === 'darwin') {
       argv.browser = 'open -g';
-    } else { // assume unix/linux
+    } else if (os.platform() === 'android') {
+		argv.browser = 'termux-open-url'
+	} else { // assume unix/linux
       argv.browser = 'xdg-open';
     }
   }
