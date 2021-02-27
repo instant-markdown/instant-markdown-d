@@ -176,6 +176,10 @@ td,th {
 
 .markdown-body img {
   border: 0;
+  /* center img in parental element */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .markdown-body hr {
