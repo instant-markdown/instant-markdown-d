@@ -8,18 +8,29 @@ const process = require('process'),
   fs = require('fs'),
   path = require('path');
 
-const MarkdownIt = require('markdown-it'),
-  hljs = require('highlight.js'),
-  io = require('socket.io')(server),
-  send = require('send');
-
-const mjpage = require('mathjax-node-page').mjpage;
-const taskLists = require('markdown-it-task-lists');
 const argv = require('minimist')(process.argv.slice(2), {
   string: ['browser'],
   default: {port: 8090, debug: false},
   alias: {V: 'version', h: 'help'},
 });
+
+const MarkdownIt = require('markdown-it'),
+  hljs = require('highlight.js'),
+  io = require('socket.io')(server, {
+    cors: {
+      origin: '*',
+      methods: [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      credentials: true
+    }
+  }),
+  send = require('send');
+
+const mjpage = require('mathjax-node-page').mjpage;
+const taskLists = require('markdown-it-task-lists');
 
 if (argv.version || argv.debug) {
   const version= require('./version');
@@ -164,6 +175,7 @@ function addSecurityHeaders(req, res, isIndexFile) {
     // picked up across soft reloads.
     res.setHeader('Cache-Control', 'no-store');
   }
+  if (argv.debug) console.debug(`Content-Security-Policy=${csp}`)
 }
 
 function httpHandler(req, res) {
