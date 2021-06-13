@@ -17,10 +17,22 @@ socket.on('connect', function () {
     window.open('', '_self', '');
     window.close();
 
-    let firefoxWarning =
-    "<h1>Oops!</h1>" +
-    "<h3>Firefox doesn't allow windows to self-close.</h3>" +
-    "<h3>If you want the preview window to close automatically like in other browsers, go to about:config and set dom.allow_scripts_to_close_windows to true.</h3>"
+    let firefoxWarning =`
+      <h1>Oops!</h1>
+      <h3>Your browser doesn't allow windows to self-close. </h3>
+      <h3>If you want the preview window to close automatically </h3>
+      <ul>
+        <li>in Firefox, go to about:config and set
+        dom.allow_scripts_to_close_windows to true.</li>
+        <li>in Qutebrowser (with old QtWebKit backend), go to :config-edit and
+          set
+          <a href='https://qutebrowser.org/doc/help/settings.html#content.javascript.can_close_tabs'>content.javascript.can_close_tabs</a>
+        to true</li>
+        <li>in Chromium derivatives it is not possible</li>
+      </ul>
+      <b>If it OK to close the browser manually, then do so. Allowing scripts
+      to close windows not opened by the script is considered a security
+      risk.</b> `
     document.body.innerHTML = firefoxWarning;
   });
 });
