@@ -6,3 +6,9 @@ debug.html
 
 # packages
 *.tgz
+
+# Python + pytest
+venv
+__pycache__
+.pytest_cache
+geckodriver.log
