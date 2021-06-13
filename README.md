@@ -3,28 +3,34 @@
 
 ![Node.js](https://github.com/instant-markdown/instant-markdown-d/workflows/Node.js/badge.svg)
 
-instant-markdown-d is a small Node.js server that enables instant compilation and previewing of Markup files. A plugin can easily be written for any text editor to interface with it. One currently exists for VIm: https://github.com/suan/vim-instant-markdown
+instant-markdown-d is a small Node.js server that enables instant compilation
+and previewing of Markup files. A plugin can easily be written for any text
+editor to interface with it. One currently exists for Vim:
+https://github.com/instant-markdown/vim-instant-markdown
 
 Installation
 ------------
 
 Install the mini-server by running either:
 
-- `[sudo] npm -g install instant-markdown-d`
+    [sudo] npm -g install instant-markdown-d
 
-or pre-release version
+or:
 
-- `[sudo] npm -g install instant-markdown-d@next`
+    [sudo] yarn global add instant-markdown-d
 
-see [vim-instant-markdown](https://github.com/suan/vim-instant-markdown) for
-Vim / Neovim integration.
+To install from the bleeding edge development version, read the [contributing
+guide](CONTRIBUTING.md). See
+[vim-instant-markdown](https://github.com/instant-markdown/vim-instant-markdown)
+for Vim / Neovim integration.
 
 REST API
 --------
-| Action           | HTTP Method | Request URL               | Request Body |
-|---------------------|-------------|---------------------------|--------------------|
-| Refresh Markdown on page | PUT        | http://localhost:\<port\> | \<New Markdown file contents\> |
-| Close Webpage    | DELETE      | http://localhost:\<port\> | |
+
+| Action                   | HTTP Method | Request URL               | Request Body                   |
+|--------------------------|-------------|---------------------------|--------------------------------|
+| Refresh Markdown on page | PUT         | http://localhost:\<port\> | \<New Markdown file contents\> |
+| Close Webpage            | DELETE      | http://localhost:\<port\> |                                |
 
 By default, `<port>` is 8090
 
