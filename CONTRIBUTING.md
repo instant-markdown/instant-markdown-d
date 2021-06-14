@@ -15,10 +15,10 @@ Simple integration test
 
     npm run test
 
-Fine grained tests with checks for output
+Fine grained tests with checks for output requires Python, Firefox and geckodriver.
 
     python -m venv venv && source venv/bin/activate && pip install -r tests/requirements.txt
-    pytest
+    pytest --log-level=info
 
 # Making a release
 
