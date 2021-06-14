@@ -14,7 +14,10 @@ def test_math(server, browser, method):
     if "--mathjax" in server.options:
         assert all(
             env not in result for env in latex_envs
-        ), "LaTeX equations should have been rendered as MathJax, but that did not happen"
+        ), (
+            "LaTeX equations should have been rendered as MathJax, "
+            "but that did not happen"
+        )
     else:
         assert all(
             env in result for env in latex_envs

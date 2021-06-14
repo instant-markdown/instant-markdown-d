@@ -1,7 +1,6 @@
 import logging
 import signal
 import subprocess
-import time
 from shutil import which
 
 import pycurl
@@ -16,21 +15,12 @@ logger = logging.getLogger("instant-markdown-d_tests")
 
 class BrowserEngine(webdriver.Firefox):
     def __init__(self):
-        # Deprecated API
-        # from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-        # binary = FirefoxBinary()
-        # binary.add_command_line_options("--headless")
-        # super().__init__(firefox_binary=binary)
-
         options = webdriver.FirefoxOptions()
         options.add_argument("--headless")
         super().__init__(options=options)
 
     def get(self, port):
         url = f"http://localhost:{port}/"
-
-        #  self.back()
-        #  self.refresh()
 
         logger.info(f"Get {url}")
         super().get(url)
@@ -91,9 +81,11 @@ class InstantMarkdownD:
         with open(markdown_file, "rb") as file:
             text = file.read()
 
-            # Blocks!
-            # self.process.communicate(input=text, timeout=2)
-            self.process.stdin.write(text)
+            # Blocks! so give it enough time to pass text to stdin.
+            try:
+                self.process.communicate(input=text, timeout=1)
+            except subprocess.TimeoutExpired:
+                pass
 
     def send_curl(self, markdown_file):
         logger.info(f"send via curl using REST API {markdown_file}")
@@ -119,8 +111,8 @@ def browser():
 
 @pytest.fixture(
     scope="function",
-    params=["--debug", "--debug --mathjax"],  # ("--debug", 9090)
+    params=[("--debug",), ("--debug --mathjax",), ("--debug", 9090)],
 )
 def server(request):
-    with InstantMarkdownD(request.param) as srv:
+    with InstantMarkdownD(*request.param) as srv:
         yield srv
