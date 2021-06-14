@@ -25,21 +25,31 @@ jobs:
             node_version: 14
           - os: macos-latest
             node_version: 14
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
+
     - name: Install
       run: npm install
+
     - name: Link globally on POSIX
       run: sudo npm link
       if: ${{ matrix.os != 'windows-latest' }}
+
     - name: Link globally on Windows
       run: npm link
       if: ${{ matrix.os == 'windows-latest' }}
-    - name: Test
+
+    - name: Integration test
       run: |
         npx --no-install instant-markdown-d --version
         npm test &
@@ -47,3 +57,13 @@ jobs:
         npm stop
       env:
         CI: true
+
+    - name: Install mamba
+      uses: mamba-org/provision-with-micromamba@v10
+      with:
+        environment-file: tests/environment.yml
+
+    - name: Fine grained tests
+      run: |
+        micromamba activate instant-markdown
+        python -m pytest --log-cli-level=info
