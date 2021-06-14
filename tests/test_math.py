@@ -1,20 +1,24 @@
 import pytest
 
 
+@pytest.mark.parametrize(
+    "server_options,port",
+    [("--debug", 8090), ("--debug --mathjax", 8090), ("--debug", 9090)],
+)
 @pytest.mark.parametrize("method", ["send_curl", "send_stdin"])
-def test_math(server, browser, method):
-    send = getattr(server, method)
-    send("tests/test_math.md")
+def test_math(browser, Server, server_options, port, method):
 
-    result = browser.get(server.port)
+    with Server(server_options, port) as srv:
+        send = getattr(srv, method)
+        send("tests/test_math.md")
 
-    assert "Math with MathJax" in result, "No text was rendered"
+        result = browser.get(srv.port)
+
+    assert '<span class="test-case"></span>' in result, "No text was rendered"
 
     latex_envs = (r"\begin", r"\end", "$$")
-    if "--mathjax" in server.options:
-        assert all(
-            env not in result for env in latex_envs
-        ), (
+    if "--mathjax" in server_options:
+        assert all(env not in result for env in latex_envs), (
             "LaTeX equations should have been rendered as MathJax, "
             "but that did not happen"
         )

@@ -1,3 +1,5 @@
+<span class="test-case"></span>
+
 # [Mermaid](https://mermaid-js.github.io/mermaid/#/README) Graphs
 
 ## [Flowchart](https://mermaid-js.github.io/mermaid/#/flowchart)

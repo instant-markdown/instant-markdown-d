@@ -1,5 +1,7 @@
 import logging
+import time
 import signal
+import socket
 import subprocess
 from shutil import which
 
@@ -11,6 +13,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 logger = logging.getLogger("instant-markdown-d_tests")
+
+
+def port_in_use(port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', port)) == 0
 
 
 class BrowserEngine(webdriver.Firefox):
@@ -56,12 +63,24 @@ class InstantMarkdownD:
     def __init__(self, options, port=8090):
         self.port = port
         self.options = options.split()
+
+        for tries in range(3):
+            if port_in_use(port):
+                logger.critical(
+                    f"Port {port} is being used. Tests may fail. "
+                    "Check if instant-markdown-d is running in the background, "
+                    "using `pgrep -af node` in Unix or equivalent"
+                )
+                time.sleep(0.2)
+            else:
+                break
+
         if port != 8090:
             self.options.append(f"--port={port}")
 
     def __enter__(self):
         node = which("node")
-        cmd = (node, "./src/cli.js", *self.options)
+        cmd = [node, "./src/cli.js", *self.options]
         logger.info(f"Running {' '.join(cmd)}")
         self.process = subprocess.Popen(
             cmd,
@@ -90,6 +109,12 @@ class InstantMarkdownD:
     def send_curl(self, markdown_file):
         logger.info(f"send via curl using REST API {markdown_file}")
 
+        # Wait some time to ensure the server has launched
+        # TODO: find a better way: signal? return code? check port? daemon?
+        time.sleep(1)
+
+        # Equivalent to
+        # curl -X PUT -T {markdown_file} http://localhost:{port}
         c = pycurl.Curl()
         c.setopt(c.URL, f"http://localhost:{self.port}")
 
@@ -103,16 +128,12 @@ class InstantMarkdownD:
             c.close()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def browser():
     with BrowserEngine() as b:
         yield b
 
 
-@pytest.fixture(
-    scope="function",
-    params=[("--debug",), ("--debug --mathjax",), ("--debug", 9090)],
-)
-def server(request):
-    with InstantMarkdownD(*request.param) as srv:
-        yield srv
+@pytest.fixture(scope="function")
+def Server():
+    return InstantMarkdownD

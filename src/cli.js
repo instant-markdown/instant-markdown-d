@@ -43,6 +43,7 @@ Usage: instant-markdown-d [OPTIONS]
 
 Options:
   --mathjax          Enable MathJax parsing
+  --mermaid          Enable Mermaid.js diagrams
   --browser BROWSER  Use a custom browser
   --port PORT        Use a custom port (default: 8090)
   --debug            Be verbose and do not open browser
