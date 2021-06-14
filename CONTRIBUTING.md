@@ -18,7 +18,7 @@ Simple integration test
 Fine grained tests with checks for output requires Python, Firefox and geckodriver.
 
     python -m venv venv && source venv/bin/activate && pip install -r tests/requirements.txt
-    pytest --log-level=info
+    pytest --log-cli-level=info
 
 # Making a release
 

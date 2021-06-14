@@ -11,7 +11,7 @@
 
 ## Provide the output of test command (required)
 
-Run the test by installing the master version (instructions valid for
+Run the tests by installing the master version (instructions valid for
 Linux / macOS):
 
 ```sh
@@ -19,10 +19,20 @@ export NPM_PACKAGES=$HOME/.npm-packages
 export PATH="$NPM_PACKAGES/bin:$PATH"
 export NODE_PATH="$NPM_PACKAGES/lib/node_modules:$NODE_PATH"
 
-git clone https://github.com/suan/instant-markdown-d
+git clone https://github.com/instant-markdown/instant-markdown-d
 cd instant-markdown-d
 npm install -g .
 npm test&; sleep 5; npm stop
+```
+
+Run also the fine-grained test suite which validates the rendering (requires
+Python 3.6+, Firefox and geckodriver):
+
+```sh
+python -m venv venv
+source venv/bin/activate
+pip install -r tests/requirements.txt
+pytest --log-cli-level=info
 ```
 
 If the above doesn't work, at least run
@@ -32,7 +42,7 @@ curl -LO https://raw.githubusercontent.com/suan/instant-markdown-d/master/tests/
 cat test_math.md | instant-markdown-d --mathjax --debug
 ```
 
-and paste the console output here:
+Finally, paste the console output here:
 
 ```sh
 
