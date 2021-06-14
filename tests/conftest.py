@@ -29,6 +29,7 @@ class BrowserEngine(webdriver.Firefox):
     def get(self, port):
         url = f"http://localhost:{port}/"
 
+        self.back()
         logger.info(f"Get {url}")
         super().get(url)
 
