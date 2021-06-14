@@ -72,6 +72,8 @@ class InstantMarkdownD:
                     "using `pgrep -af node` in Unix or equivalent"
                 )
                 time.sleep(0.2)
+                if tries == 2:
+                    logger.error("Giving up checks for port")
             else:
                 break
 
