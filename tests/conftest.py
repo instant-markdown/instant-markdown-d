@@ -35,7 +35,8 @@ class BrowserEngine(webdriver.Firefox):
     def get(self, port):
         url = f"http://localhost:{port}/"
 
-        self.back()
+        # Clear page?
+        super().get("about:newtab")
         logger.info(f"Get {url}")
         super().get(url)
 
