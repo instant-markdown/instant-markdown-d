@@ -20,6 +20,12 @@ def port_in_use(port):
         return s.connect_ex(("localhost", port)) == 0
 
 
+def browser_wait_condition(driver):
+    span_test_case = EC.presence_of_element_located((By.CLASS_NAME, "test-case"))
+    div_con_error = EC.invisibility_of_element_located((By.ID, "con-error"))
+    return span_test_case(driver) and div_con_error(driver)
+
+
 class BrowserEngine(webdriver.Firefox):
     def __init__(self):
         options = webdriver.FirefoxOptions()
@@ -35,9 +41,7 @@ class BrowserEngine(webdriver.Firefox):
 
         # Explicit wait for 2 seconds and until a html tag with a class/id is
         # located
-        _ = WebDriverWait(self, 2).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "test-case"))
-        )
+        _ = WebDriverWait(self, 2).until(browser_wait_condition)
 
         html = self.page_source
         return html
