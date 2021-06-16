@@ -17,7 +17,7 @@ logger = logging.getLogger("instant-markdown-d_tests")
 
 def port_in_use(port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(('localhost', port)) == 0
+        return s.connect_ex(("localhost", port)) == 0
 
 
 class BrowserEngine(webdriver.Firefox):
@@ -67,16 +67,20 @@ class InstantMarkdownD:
 
         for tries in range(3):
             if port_in_use(port):
-                logger.critical(
-                    f"Port {port} is being used. Tests may fail. "
-                    "Check if instant-markdown-d is running in the background, "
-                    "using `pgrep -af node` in Unix or equivalent"
+                logger.warning(
+                    f"Port {port} is active. Tests may fail. Trying again"
                 )
                 time.sleep(0.2)
-                if tries == 2:
-                    logger.error("Giving up checks for port")
             else:
                 break
+        else:
+            # break not encountered => port is active
+            logger.error(
+                "Giving up checks for port. "
+                "Is instant-markdown-d already running?"
+                "Check if instant-markdown-d is running in the background, "
+                "using `pgrep -af node` in Unix or equivalent"
+            )
 
         if port != 8090:
             self.options.append(f"--port={port}")
@@ -98,6 +102,25 @@ class InstantMarkdownD:
         logger.info("Exiting instant-markdown-d")
         self.process.terminate()
 
+    def send(self, via, markdown_file):
+        # Wait some time to ensure the server has launched
+        # TODO: find a better way: signal? return code? daemon?
+        for tries in range(3):
+            if port_in_use(self.port):
+                break
+            else:
+                logger.info(f"Port {self.port} is inactive. Waiting... ")
+                time.sleep(0.5)
+        else:
+            # break not encountered => port inactive
+            raise IOError(
+                "Giving up checks for port. "
+                "Has instant-markdown-d failed to start?"
+            )
+
+        method = getattr(self, f"send_{via}")
+        method(markdown_file)
+
     def send_stdin(self, markdown_file):
         logger.info(f"send via stdin {markdown_file}")
         with open(markdown_file, "rb") as file:
@@ -111,10 +134,6 @@ class InstantMarkdownD:
 
     def send_curl(self, markdown_file):
         logger.info(f"send via curl using REST API {markdown_file}")
-
-        # Wait some time to ensure the server has launched
-        # TODO: find a better way: signal? return code? check port? daemon?
-        time.sleep(1)
 
         # Equivalent to
         # curl -X PUT -T {markdown_file} http://localhost:{port}

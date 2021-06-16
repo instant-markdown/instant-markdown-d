@@ -5,12 +5,11 @@ import pytest
     "server_options,port",
     [("--debug", 8090), ("--debug --mathjax", 8090), ("--debug", 9090)],
 )
-@pytest.mark.parametrize("method", ["send_curl", "send_stdin"])
+@pytest.mark.parametrize("method", ["curl", "stdin"])
 def test_math(browser, Server, server_options, port, method):
 
     with Server(server_options, port) as srv:
-        send = getattr(srv, method)
-        send("tests/test_math.md")
+        srv.send(method, "tests/test_math.md")
 
         result = browser.get(srv.port)
 

@@ -2,12 +2,11 @@ import pytest
 
 
 @pytest.mark.parametrize("server_options", ["--debug", "--debug --mermaid"])
-@pytest.mark.parametrize("method", ["send_curl", "send_stdin"])
+@pytest.mark.parametrize("method", ["curl", "stdin"])
 def test_mermaid(browser, Server, server_options, method):
 
     with Server(server_options) as srv:
-        send = getattr(srv, method)
-        send("tests/test_mermaid.md")
+        srv.send(method, "tests/test_mermaid.md")
 
         result = browser.get(srv.port)
 
