@@ -16,10 +16,9 @@ jobs:
         os:
           - ubuntu-latest
         node_version:
-          - 8
-          - 10
           - 12
           - 14
+          - 16
         include:
           - os: windows-latest
             node_version: 14
