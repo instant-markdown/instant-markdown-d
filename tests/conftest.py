@@ -124,10 +124,10 @@ class InstantMarkdownD:
                 "Has instant-markdown-d failed to start?"
             )
 
-        method = getattr(self, f"send_{via}")
+        method = getattr(self, f"_send_{via}")
         method(markdown_file)
 
-    def send_stdin(self, markdown_file):
+    def _send_stdin(self, markdown_file):
         logger.info(f"send via stdin {markdown_file}")
         with open(markdown_file, "rb") as file:
             text = file.read()
@@ -138,7 +138,7 @@ class InstantMarkdownD:
             except subprocess.TimeoutExpired:
                 pass
 
-    def send_curl(self, markdown_file):
+    def _send_curl(self, markdown_file):
         logger.info(f"send via curl using REST API {markdown_file}")
 
         # Equivalent to
