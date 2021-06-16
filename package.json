@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "homepage": "https://github.com/instant-markdown/instant-markdown-d",
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=12.0.0"
   },
   "main": "./src/cli.js",
   "preferGlobal": "true",
