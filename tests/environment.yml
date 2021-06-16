@@ -1,0 +1,12 @@
+name: instant-markdown
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - firefox=89.0
+  - geckodriver=0.29.0
+  - pycurl=7.43.0.6
+  - pytest=6.2.4
+  - python=3.9.4
+  - selenium=3.141.0
+  - wheel=0.36.2
