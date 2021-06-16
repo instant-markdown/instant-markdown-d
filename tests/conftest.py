@@ -35,13 +35,14 @@ class BrowserEngine(webdriver.Firefox):
     def get(self, port):
         url = f"http://localhost:{port}/"
 
-        # Clear page?
-        super().get("about:newtab")
+        # FIXME: Do we need this?
+        time.sleep(0.5)
+
         logger.info(f"Get {url}")
         super().get(url)
 
-        # Explicit wait for 2 seconds and until a html tag with a class/id is
-        # located
+        # Explicit wait with a timeout for 2 seconds and until a html tag with
+        # a class/id is located
         _ = WebDriverWait(self, 2).until(browser_wait_condition)
 
         html = self.page_source
