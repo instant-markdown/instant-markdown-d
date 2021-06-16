@@ -36,7 +36,7 @@ class BrowserEngine(webdriver.Firefox):
         url = f"http://localhost:{port}/"
 
         # FIXME: Do we need this?
-        time.sleep(0.5)
+        time.sleep(1.0)
 
         logger.info(f"Get {url}")
         super().get(url)
