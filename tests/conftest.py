@@ -71,7 +71,7 @@ class InstantMarkdownD:
         self.port = port
         self.options = options.split()
 
-        for tries in range(5):
+        for tries in range(10):
             if port_in_use(port):
                 logger.warning(
                     f"Port {port} is active. Tests may fail. Trying again"
@@ -111,7 +111,7 @@ class InstantMarkdownD:
     def send(self, via, markdown_file):
         # Wait some time to ensure the server has launched
         # TODO: find a better way: signal? return code? daemon?
-        for tries in range(5):
+        for tries in range(10):
             if port_in_use(self.port):
                 break
             else:
