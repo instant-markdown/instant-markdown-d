@@ -1,8 +1,9 @@
 !nstant-markdown-d
 ==================
 
-![Node.js](https://github.com/instant-markdown/instant-markdown-d/workflows/Node.js/badge.svg)
-![open collective badge](https://opencollective.com/instant-markdown/tiers/backer/badge.svg?label=backer&color=brightgreen)
+[![npm](https://img.shields.io/npm/v/instant-markdown-d)](https://www.npmjs.com/package/instant-markdown-d)
+[![Node.js](https://github.com/instant-markdown/instant-markdown-d/workflows/Node.js/badge.svg)](https://github.com/instant-markdown/instant-markdown-d/actions/workflows/nodejs.yml)
+[![open collective badge](https://opencollective.com/instant-markdown/tiers/backer/badge.svg?label=backer&color=brightgreen)](https://opencollective.com/instant-markdown/)
 
 instant-markdown-d is a small Node.js server that enables instant compilation
 and previewing of Markup files. A plugin can easily be written for any text
