@@ -2,6 +2,7 @@
 ==================
 
 ![Node.js](https://github.com/instant-markdown/instant-markdown-d/workflows/Node.js/badge.svg)
+![open collective badge](https://opencollective.com/instant-markdown/tiers/backer/badge.svg?label=backer&color=brightgreen)
 
 instant-markdown-d is a small Node.js server that enables instant compilation
 and previewing of Markup files. A plugin can easily be written for any text
@@ -15,7 +16,7 @@ Install the mini-server by running either:
 
     [sudo] npm -g install instant-markdown-d
 
-or:
+or ~~using yarn~~ (not recommended. See issue #86):
 
     [sudo] yarn global add instant-markdown-d
 
