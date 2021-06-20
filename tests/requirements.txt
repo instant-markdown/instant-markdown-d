@@ -18,8 +18,12 @@ pycurl==7.43.0.6
     # via -r requirements.in
 pyparsing==2.4.7
     # via packaging
-pytest==6.2.4
+pytest-rerunfailures==10.0
     # via -r requirements.in
+pytest==6.2.4
+    # via
+    #   -r requirements.in
+    #   pytest-rerunfailures
 selenium==3.141.0
     # via -r requirements.in
 toml==0.10.2
@@ -28,3 +32,6 @@ urllib3==1.26.5
     # via selenium
 wheel==0.36.2
     # via -r requirements.in
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
