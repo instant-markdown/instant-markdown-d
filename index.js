@@ -30,7 +30,7 @@ socket.on('connect', function () {
         to true</li>
         <li>in Chromium derivatives it is not possible</li>
       </ul>
-      <b>If it OK to close the browser manually, then do so. Allowing scripts
+      <b>If it is OK to close the browser manually, then do so. Allowing scripts
       to close windows not opened by the script is considered a security
       risk.</b> `
     document.body.innerHTML = firefoxWarning;
