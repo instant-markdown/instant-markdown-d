@@ -5,6 +5,9 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="Content-Language" content="en">
+  <!-- theme stylesheets are dynamic loaded in index.js, according to 'theme' param -->
+  <!-- <link rel="stylesheet" type="text/css" href="/css/github-syntax-highlight.css"> -->
+  <!-- <link rel="stylesheet" type="text/css" href="/css/github-markdown.css"> -->
   <link rel="stylesheet" type="text/css" href="/css/mjpage-html.css">
   <style>
     .markdown-body {
@@ -24,13 +27,6 @@
   <script src="/node_modules/mermaid/dist/mermaid.min.js"></script>
   <script src="/socket.io/socket.io.min.js"></script>
   <script src="/index.js"></script>
-  <script type="text/javascript">
-      // dynamic load style according to *theme* params
-      let theme = getUrlParameter("theme");
-      let themePath = theme ? "themes/"+theme : "";
-      loadStyle("/css/"+themePath+ "/github-markdown.css");
-      loadStyle("/css/"+themePath+ "/github-syntax-highlight.css");
-  </script>
 </head>
 <body>
   <div class="container">

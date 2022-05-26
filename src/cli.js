@@ -269,7 +269,7 @@ function onListening() {
     }
   }
   let cmd = argv.browser + ' http://localhost:' + argv.port + '/?';
-  // add theme param if absent
+  // add theme param if present
   if (argv.theme){
      cmd += 'theme=' + argv.theme;
   }
