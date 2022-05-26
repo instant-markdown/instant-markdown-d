@@ -191,7 +191,12 @@ function httpHandler(req, res) {
         let isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
         let pkgRoot = path.dirname(__dirname);
         let cwd = process.cwd();
-        let mount = cwd && !fs.existsSync(pkgRoot + req.url) ? cwd : pkgRoot;
+
+        let filePath = req.url.indexOf("?") >= 0 ?
+            req.url.substr(0, req.url.lastIndexOf("?")) :
+            req.url;
+
+        let mount = cwd && !fs.existsSync(pkgRoot + filePath) ? cwd : pkgRoot;
         if (githubUrl) {
           addSecurityHeaders(req, res, false);
            // Serve the file out of the current working directory
@@ -209,7 +214,7 @@ function httpHandler(req, res) {
         }
 
         // Otherwise serve the file from the directory this module is in
-        send(req, req.url, {root: mount})
+        send(req, filePath, {root: mount})
           .pipe(res);
       }
       break;
@@ -263,7 +268,12 @@ function onListening() {
       argv.browser = 'xdg-open';
     }
   }
-  let cmd = argv.browser + ' http://localhost:' + argv.port + '/';
+  let cmd = argv.browser + ' http://localhost:' + argv.port + '/?';
+  // add theme param if absent
+  if (argv.theme){
+     cmd += 'theme=' + argv.theme;
+  }
+
   if (argv.debug) {
     console.log("Run the following to manually open browser: \n    " + cmd);
   } else {

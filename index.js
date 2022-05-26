@@ -61,3 +61,29 @@ function setDisconnected(isDisconnected) {
   document.getElementById('con-error').style.display =
     isDisconnected ? 'block' : 'none';
 }
+
+
+function loadStyle(src) {
+  return new Promise(function (resolve, reject) {
+    let link = document.createElement('link');
+    link.href = src;
+    link.rel = 'stylesheet';
+
+    link.onload = () => resolve(link);
+    link.onerror = () => reject(new Error(`Style load error for ${src}`));
+
+    document.head.append(link);
+  });
+}
+
+function getUrlParameter(sParam){
+  var sPageURL = window.location.search.substring(1);
+  var sURLVariables = sPageURL.split('&');
+  for (var i = 0; i < sURLVariables.length; i++){
+    var sParameterName = sURLVariables[i].split('=');
+    if (sParameterName[0] == sParam)
+    {
+        return sParameterName[1];
+    }
+  }
+}
