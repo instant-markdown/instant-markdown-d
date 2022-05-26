@@ -87,3 +87,13 @@ function getUrlParameter(sParam){
     }
   }
 }
+
+
+// dynamic load style according to *theme* params
+window.onload = function(){
+   let theme = getUrlParameter("theme");
+   let themePath = theme ? "themes/"+theme : "";
+   loadStyle("/css/"+themePath+ "/github-markdown.css");
+   loadStyle("/css/"+themePath+ "/github-syntax-highlight.css");
+}
+
