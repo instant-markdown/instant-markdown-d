@@ -76,24 +76,15 @@ function loadStyle(src) {
   });
 }
 
-function getUrlParameter(sParam){
-  var sPageURL = window.location.search.substring(1);
-  var sURLVariables = sPageURL.split('&');
-  for (var i = 0; i < sURLVariables.length; i++){
-    var sParameterName = sURLVariables[i].split('=');
-    if (sParameterName[0] == sParam)
-    {
-        return sParameterName[1];
-    }
-  }
-}
-
-
-// dynamic load style according to *theme* params
+// register func on window.onload may not best way
+// but the in-line script in index.html may request more feature(unsafe-content-allowed)
+// and more flexable js-lib(etc jquery) is heavier too much 
 window.onload = function(){
-   let theme = getUrlParameter("theme");
-   let themePath = theme ? "themes/"+theme : "";
-   loadStyle("/css/"+themePath+ "/github-markdown.css");
-   loadStyle("/css/"+themePath+ "/github-syntax-highlight.css");
+    // dynamic load style according to *theme* params
+    let searchParams = new URLSearchParams(window.location.search);
+    let theme = searchParams.get("theme") || "light";
+    let themePath = "/css/themes/" + theme + "/";
+    loadStyle(themePath + "github-markdown.css");
+    loadStyle(themePath + "github-syntax-highlight.css");
 }
 
