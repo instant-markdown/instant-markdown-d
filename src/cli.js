@@ -6,7 +6,8 @@ const process = require('process'),
   exec = require('child_process').exec,
   os = require('os'),
   fs = require('fs'),
-  path = require('path');
+  path = require('path'),
+  url = require('url');
 
 const argv = require('minimist')(process.argv.slice(2), {
   string: ['browser'],
@@ -192,9 +193,7 @@ function httpHandler(req, res) {
         let pkgRoot = path.dirname(__dirname);
         let cwd = process.cwd();
 
-        let filePath = req.url.indexOf("?") >= 0 ?
-            req.url.substr(0, req.url.lastIndexOf("?")) :
-            req.url;
+        let filePath = url.parse(req.url, false).pathname;   
 
         let mount = cwd && !fs.existsSync(pkgRoot + filePath) ? cwd : pkgRoot;
         if (githubUrl) {
