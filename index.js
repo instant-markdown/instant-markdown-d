@@ -4,6 +4,9 @@ let socket = io('http://'+ window.location.host +'/');
 socket.on('connect', function () {
   setDisconnected(false);
   socket.on('newContent', function(newHTML) {
+    var s = "</h2>\n"
+    var idx = newHTML.indexOf(s)
+    newHTML = newHTML.substring(idx+s.length)
     document.querySelector(".markdown-body").innerHTML = newHTML;
 
     // scroll to the hyperlink with id="marker"
