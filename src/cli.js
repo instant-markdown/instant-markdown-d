@@ -31,7 +31,8 @@ const MarkdownIt = require('markdown-it'),
 
 const mjpage = require('mathjax-node-page').mjpage;
 const taskLists = require('markdown-it-task-lists');
-
+const frontMatter = require('markdown-it-front-matter');
+ 
 if (argv.version || argv.debug) {
   const version= require('./version');
   console.log(`instant-markdown-d version: v${version}`);
@@ -81,7 +82,7 @@ let md = new MarkdownIt({
       return str;
     }
   }
-}).use(taskLists);
+}).use(taskLists, {enabled: true}).use(frontMatter, function(fm){});
 
 if (argv.mathjax) md.use(require('markdown-it-mathjax')());
 if (argv.mermaid) md.use(require('markdown-it-textual-uml'));
