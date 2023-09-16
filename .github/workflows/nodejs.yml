@@ -58,18 +58,11 @@ jobs:
         CI: true
 
     - name: Install mamba
-      uses: mamba-org/setup-micromamba@v1.4.4
+      uses: mamba-org/provision-with-micromamba@v16
       with:
-        micromamba-version: '1.5.1-0'
         environment-file: tests/environment.yml
-        cache-environment: true
-        cache-downloads: true
-        init-shell: >-
-          bash
-          zsh
-          cmd.exe
-          powershell
 
     - name: Fine grained tests
       run: |
+        micromamba activate instant-markdown
         python -m pytest
