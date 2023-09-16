@@ -4,57 +4,29 @@
 #
 #    pip-compile
 #
-attrs==23.1.0
-    # via
-    #   outcome
-    #   trio
-certifi==2023.7.22
-    # via selenium
 exceptiongroup==1.1.3
-    # via
-    #   pytest
-    #   trio
-    #   trio-websocket
-h11==0.14.0
-    # via wsproto
-idna==3.4
-    # via trio
+    # via pytest
 iniconfig==2.0.0
     # via pytest
-outcome==1.2.0
-    # via trio
 packaging==23.1
     # via
     #   pytest
     #   pytest-rerunfailures
 pluggy==1.3.0
     # via pytest
-# pycurl==7.45.2
+pycurl==7.45.2
     # via -r requirements.in
-pysocks==1.7.1
-    # via urllib3
 pytest==7.4.2
     # via
     #   -r requirements.in
     #   pytest-rerunfailures
 pytest-rerunfailures==12.0
     # via -r requirements.in
+selenium==3.141.0
     # via -r requirements.in
-selenium==4.12.0
-    # via -r requirements.in
-sniffio==1.3.0
-    # via trio
-sortedcontainers==2.4.0
-    # via trio
 tomli==2.0.1
     # via pytest
-trio==0.22.2
+urllib3==1.26.16
     # via
+    #   -r requirements.in
     #   selenium
-    #   trio-websocket
-trio-websocket==0.10.4
-    # via selenium
-urllib3[socks]==2.0.4
-    # via selenium
-wsproto==1.2.0
-    # via trio-websocket
