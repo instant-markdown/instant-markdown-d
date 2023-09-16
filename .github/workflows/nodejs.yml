@@ -58,7 +58,7 @@ jobs:
         CI: true
 
     - name: Install mamba
-      uses: mamba-org/setup-micromamba@v1.4
+      uses: mamba-org/setup-micromamba@v1.4.4
       with:
         micromamba-version: '1.5.1-0'
         environment-file: tests/environment.yml
