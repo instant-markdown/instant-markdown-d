@@ -8,6 +8,7 @@ pkgs.mkShell {
     nativeBuildInputs = with pkgs.buildPackages; [
       nodePackages.npm
       git
+      geckodriver
     ];
     # libs
     buildInputs = with pkgs; [

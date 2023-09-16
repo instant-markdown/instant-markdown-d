@@ -65,4 +65,4 @@ jobs:
     - name: Fine grained tests
       run: |
         micromamba activate instant-markdown
-        python -m pytest --log-cli-level=info
+        python -m pytest

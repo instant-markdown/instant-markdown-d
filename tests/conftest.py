@@ -13,6 +13,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 logger = logging.getLogger("instant-markdown-d_tests")
+logger.setLevel(logging.INFO)
+# logger = logging
+# logging.basicConfig(level=logging.INFO)
 
 
 def port_in_use(port):
@@ -93,7 +96,11 @@ class InstantMarkdownD:
 
     def __enter__(self):
         node = which("node")
+        if not node:
+            raise OSError("Node.js is not installed.")
+
         cmd = [node, "./src/cli.js", *self.options]
+        assert all(isinstance(c, str) for c in cmd)
         logger.info(f"Running {' '.join(cmd)}")
         self.process = subprocess.Popen(
             cmd,
@@ -165,3 +172,14 @@ def browser():
 @pytest.fixture(scope="function")
 def Server():
     return InstantMarkdownD
+
+
+if __name__ == "__main__":
+    # Run
+    #   python tests/conftest.py
+    # to ensure all fixtures work
+    with BrowserEngine():
+        pass
+
+    with InstantMarkdownD(""):
+        pass
