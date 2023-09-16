@@ -14,8 +14,6 @@ packaging==23.1
     #   pytest-rerunfailures
 pluggy==1.3.0
     # via pytest
-pycurl==7.45.2
-    # via -r requirements.in
 pytest==7.4.2
     # via
     #   -r requirements.in

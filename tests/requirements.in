@@ -2,4 +2,4 @@ selenium<4
 urllib3<2
 pytest
 pytest-rerunfailures
-pycurl
+# pycurl
