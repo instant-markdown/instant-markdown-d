@@ -1,6 +1,14 @@
+# 0.3.0 (2023-09-30)
+
+- New dark theme (thanks @peter-liu)
+- Ignore YAML front-matter while rendering (thanks @hitzhangjie)
+- Improved testing with Nix configuration, pytest, micromamba
+- Softly drop support for node.js < 16
+- Upgrade node.js dependencies
+
 # 0.2.0 (2021-06-16)
 
-* Optional support for Mermaid.js diagrams
+- Optional support for Mermaid.js diagrams
 - Fine grained tests using pytest and Selenium which validate the content
 - CI moved to Github Actions
 - Upgrade highlight.js and socket.io versions
