@@ -21,7 +21,7 @@
     "start": "instant-markdown-d",
     "test": "cat tests/test_math.md | instant-markdown-d --mathjax --debug",
     "stop": "curl -X DELETE -s -w 'status: %{http_code}' -m 3 localhost:8090",
-    "prepare": "genversion ./src/version.js"
+    "prepare": "npx genversion ./src/version.js"
   },
   "dependencies": {
     "highlight.js": "^11.8.0",
