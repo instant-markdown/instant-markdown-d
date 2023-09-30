@@ -6,7 +6,8 @@ const process = require('process'),
   exec = require('child_process').exec,
   os = require('os'),
   fs = require('fs'),
-  path = require('path');
+  path = require('path'),
+  url = require('url');
 
 const argv = require('minimist')(process.argv.slice(2), {
   string: ['browser'],
@@ -192,7 +193,10 @@ function httpHandler(req, res) {
         let isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
         let pkgRoot = path.dirname(__dirname);
         let cwd = process.cwd();
-        let mount = cwd && !fs.existsSync(pkgRoot + req.url) ? cwd : pkgRoot;
+
+        let filePath = url.parse(req.url, false).pathname;   
+
+        let mount = cwd && !fs.existsSync(pkgRoot + filePath) ? cwd : pkgRoot;
         if (githubUrl) {
           addSecurityHeaders(req, res, false);
            // Serve the file out of the current working directory
@@ -210,7 +214,7 @@ function httpHandler(req, res) {
         }
 
         // Otherwise serve the file from the directory this module is in
-        send(req, req.url, {root: mount})
+        send(req, filePath, {root: mount})
           .pipe(res);
       }
       break;
@@ -264,7 +268,12 @@ function onListening() {
       argv.browser = 'xdg-open';
     }
   }
-  let cmd = argv.browser + ' http://localhost:' + argv.port + '/';
+  let cmd = argv.browser + ' http://localhost:' + argv.port + '/?';
+  // add theme param if present
+  if (argv.theme){
+     cmd += 'theme=' + argv.theme;
+  }
+
   if (argv.debug) {
     console.log("Run the following to manually open browser: \n    " + cmd);
   } else {

@@ -61,3 +61,30 @@ function setDisconnected(isDisconnected) {
   document.getElementById('con-error').style.display =
     isDisconnected ? 'block' : 'none';
 }
+
+
+function loadStyle(src) {
+  return new Promise(function (resolve, reject) {
+    let link = document.createElement('link');
+    link.href = src;
+    link.rel = 'stylesheet';
+
+    link.onload = () => resolve(link);
+    link.onerror = () => reject(new Error(`Style load error for ${src}`));
+
+    document.head.append(link);
+  });
+}
+
+// register func on window.onload may not best way
+// but the in-line script in index.html may request more feature(unsafe-content-allowed)
+// and more flexable js-lib(etc jquery) is heavier too much 
+window.onload = function(){
+    // dynamic load style according to *theme* params
+    let searchParams = new URLSearchParams(window.location.search);
+    let theme = searchParams.get("theme") || "light";
+    let themePath = "/css/themes/" + theme + "/";
+    loadStyle(themePath + "github-markdown.css");
+    loadStyle(themePath + "github-syntax-highlight.css");
+}
+
