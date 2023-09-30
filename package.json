@@ -24,20 +24,20 @@
     "prepare": "genversion ./src/version.js; git clean -f;"
   },
   "dependencies": {
-    "highlight.js": "^10.4.1",
+    "highlight.js": "^11.8.0",
     "markdown-it": "^13.0.1",
     "markdown-it-mathjax": "^2.0.0",
     "markdown-it-task-lists": "^2.1.1",
     "markdown-it-front-matter": "^0.2.3",
     "markdown-it-textual-uml": "^0.1.3",
-    "mathjax": "^2.7.5",
-    "mathjax-node-page": "^1.4.0",
-    "mermaid": "^9.1.1",
-    "minimist": "^1.2.5",
-    "send": "~0.17.1",
-    "socket.io": "^3.0.4"
+    "mathjax": "^2.7.9",
+    "mathjax-node-page": "^1.4.1",
+    "mermaid": "~10.4.0",
+    "minimist": "^1.2.8",
+    "send": "~0.17.2",
+    "socket.io": "^4.7.2"
   },
   "devDependencies": {
-    "genversion": "^2.1.1"
+    "genversion": "^3.1.1"
   }
 }
