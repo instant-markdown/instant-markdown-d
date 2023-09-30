@@ -118,7 +118,7 @@ class InstantMarkdownD:
     def send(self, via, markdown_file):
         # Wait some time to ensure the server has launched
         # TODO: find a better way: signal? return code? daemon?
-        for tries in range(3):
+        for tries in range(10):
             if port_in_use(self.port):
                 break
             else:
