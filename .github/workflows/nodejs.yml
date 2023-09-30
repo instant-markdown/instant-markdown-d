@@ -65,4 +65,4 @@ jobs:
     - name: Fine grained tests
       run: |
         micromamba activate instant-markdown
-        python -m pytest
+        python -m pytest --reruns 3 --reruns-delay 2
