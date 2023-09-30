@@ -16,14 +16,14 @@ jobs:
         os:
           - ubuntu-latest
         node_version:
-          - 12
-          - 14
           - 16
+          - 18
+          - 20
         include:
           - os: windows-latest
-            node_version: 14
+            node_version: 18
           - os: macos-latest
-            node_version: 14
+            node_version: 18
 
     defaults:
       run:
