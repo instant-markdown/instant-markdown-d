@@ -16,24 +16,24 @@ jobs:
         os:
           - ubuntu-latest
         node_version:
-          - 12
-          - 14
           - 16
+          - 18
+          - 20
         include:
           - os: windows-latest
-            node_version: 14
+            node_version: 18
           - os: macos-latest
-            node_version: 14
+            node_version: 18
 
     defaults:
       run:
         shell: bash -l {0}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
 
@@ -58,11 +58,11 @@ jobs:
         CI: true
 
     - name: Install mamba
-      uses: mamba-org/provision-with-micromamba@v10
+      uses: mamba-org/provision-with-micromamba@v16
       with:
         environment-file: tests/environment.yml
 
     - name: Fine grained tests
       run: |
         micromamba activate instant-markdown
-        python -m pytest --log-cli-level=info
+        python -m pytest --reruns 3 --reruns-delay 2
