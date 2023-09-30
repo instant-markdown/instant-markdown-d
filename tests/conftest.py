@@ -118,7 +118,7 @@ class InstantMarkdownD:
     def send(self, via, markdown_file):
         # Wait some time to ensure the server has launched
         # TODO: find a better way: signal? return code? daemon?
-        for tries in range(10):
+        for tries in range(3):
             if port_in_use(self.port):
                 break
             else:
@@ -128,7 +128,8 @@ class InstantMarkdownD:
             # break not encountered => port inactive
             raise IOError(
                 "Giving up checks for port. "
-                "Has instant-markdown-d failed to start?"
+                "Has instant-markdown-d failed to start? Try running:\n"
+                f"  cat {markdown_file} | instant-markdown-d {' '.join(self.options)}"
             )
 
         method = getattr(self, f"_send_{via}")
