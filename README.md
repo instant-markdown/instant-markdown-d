@@ -19,7 +19,6 @@ Current improvements are:
 - Added anchor capabilities. This modifications allows to automatically add an id attribute to the headings, allowing to reference content sections through HTML anchors
 
 
-
 Installation
 ------------
 
