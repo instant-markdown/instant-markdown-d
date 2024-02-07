@@ -16,7 +16,7 @@ This Fork
 
 The aim of this fork is to add some extras to the markdown server of the original project.
 Current improvements are:
-- Added anchor capabilities. This modifications allows to automatically add an id attribute to the markup headings, allowing to references content sections through HTML anchors
+- Added anchor capabilities. This modifications allows to automatically add an id attribute to the headings, allowing to references content sections through HTML anchors
 
 
 Installation
