@@ -11,14 +11,6 @@ editor to interface with it. One currently exists for Vim:
 https://github.com/instant-markdown/vim-instant-markdown
 
 
-This Fork
----------
-
-The aim of this fork is to add some extras to the markdown server of the original project.
-Current improvements are:
-- Added anchor capabilities. This modifications allows to automatically add an id attribute to the headings, allowing to reference content sections through HTML anchors
-
-
 Installation
 ------------
 
