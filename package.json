@@ -35,7 +35,8 @@
     "mermaid": "~10.4.0",
     "minimist": "^1.2.8",
     "send": "~0.17.2",
-    "socket.io": "^4.7.2"
+    "socket.io": "^4.7.2",
+    "markdown-it-anchor": "8.6.7"
   },
   "devDependencies": {
     "genversion": "^3.1.1"

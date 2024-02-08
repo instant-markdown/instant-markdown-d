@@ -11,7 +11,7 @@ const process = require('process'),
 
 const argv = require('minimist')(process.argv.slice(2), {
   string: ['browser'],
-  default: {port: 8090, debug: false},
+  default: {port: 8090, debug: false, anchor: false },
   alias: {V: 'version', h: 'help'},
 });
 
@@ -46,6 +46,7 @@ Usage: instant-markdown-d [OPTIONS]
 Options:
   --mathjax          Enable MathJax parsing
   --mermaid          Enable Mermaid.js diagrams
+  --anchor           Add id attribute to HTML headings
   --browser BROWSER  Use a custom browser
   --port PORT        Use a custom port (default: 8090)
   --debug            Be verbose and do not open browser
@@ -87,6 +88,13 @@ let md = new MarkdownIt({
 
 if (argv.mathjax) md.use(require('markdown-it-mathjax')());
 if (argv.mermaid)  md.use(require('markdown-it-textual-uml'));
+
+if (argv.anchor) {
+  let anchorOpt = {
+    tabIndex: false
+  }
+  md.use(require('markdown-it-anchor'), anchorOpt);
+}
 
 const mjPageConfig = {
   format: ["TeX"],
