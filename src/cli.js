@@ -11,7 +11,7 @@ const process = require('process'),
 
 const argv = require('minimist')(process.argv.slice(2), {
   string: ['browser'],
-  default: {port: 8090, debug: false, anchor: false },
+  default: {port: 8090, debug: false, anchor: false, theme: false},
   alias: {V: 'version', h: 'help'},
 });
 
@@ -49,6 +49,7 @@ Options:
   --anchor           Add id attribute to HTML headings
   --browser BROWSER  Use a custom browser
   --port PORT        Use a custom port (default: 8090)
+  --theme THEME      Use a different theme (default: 'light'. Can be one of {'basic', 'dark', 'light'})
   --debug            Be verbose and do not open browser
   -V, --version      Display version
   -h, --help         Display help\
@@ -90,10 +91,14 @@ if (argv.mathjax) md.use(require('markdown-it-mathjax')());
 if (argv.mermaid)  md.use(require('markdown-it-textual-uml'));
 
 if (argv.anchor) {
+  const anchor = require('markdown-it-anchor');
   let anchorOpt = {
-    tabIndex: false
-  }
-  md.use(require('markdown-it-anchor'), anchorOpt);
+    tabIndex: false,
+    permalink: anchor.permalink.ariaHidden({
+      placement: 'after'
+    })
+  };
+  md.use(anchor, anchorOpt);
 }
 
 const mjPageConfig = {
@@ -202,7 +207,7 @@ function httpHandler(req, res) {
         let pkgRoot = path.dirname(__dirname);
         let cwd = process.cwd();
 
-        let filePath = url.parse(req.url, false).pathname;   
+        let filePath = url.parse(req.url, false).pathname;
 
         let mount = cwd && !fs.existsSync(pkgRoot + filePath) ? cwd : pkgRoot;
         if (githubUrl) {
@@ -278,6 +283,7 @@ function onListening() {
   }
   let cmd = argv.browser + ' http://localhost:' + argv.port + '/?';
   // add theme param if present
+  // if unspecified index.js defaults to 'light' theme
   if (argv.theme){
      cmd += 'theme=' + argv.theme;
   }
