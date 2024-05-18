@@ -10,6 +10,7 @@ and previewing of Markup files. A plugin can easily be written for any text
 editor to interface with it. One currently exists for Vim:
 https://github.com/instant-markdown/vim-instant-markdown
 
+
 Installation
 ------------
 
