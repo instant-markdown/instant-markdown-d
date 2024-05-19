@@ -1,5 +1,6 @@
+# nixos-23.11
 {
-  pkgs ? import <nixpkgs> {}
+  pkgs ? import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/bacb8503d3a51d9e9b52e52a1ba45e2c380ad07d.tar.gz") {}
 }:
 
 pkgs.mkShell {
@@ -12,7 +13,7 @@ pkgs.mkShell {
     ];
     # libs
     buildInputs = with pkgs; [
-      nodejs-slim-12_x
+      pkgs.nodejs-slim_18
     ];
     shellHook = ''
       npm install .
