@@ -18,6 +18,7 @@ socket.on('connect', function () {
     window.close();
 
     let firefoxWarning =`
+    <article class="markdown-body">
       <h1>Oops!</h1>
       <h3>Your browser doesn't allow windows to self-close. </h3>
       <h3>If you want the preview window to close automatically </h3>
@@ -32,7 +33,9 @@ socket.on('connect', function () {
       </ul>
       <b>If it is OK to close the browser manually, then do so. Allowing scripts
       to close windows not opened by the script is considered a security
-      risk.</b> `
+      risk.</b>
+    </article>
+    `
     document.body.innerHTML = firefoxWarning;
   });
 });
@@ -78,7 +81,7 @@ function loadStyle(src) {
 
 // register func on window.onload may not best way
 // but the in-line script in index.html may request more feature(unsafe-content-allowed)
-// and more flexable js-lib(etc jquery) is heavier too much 
+// and more flexable js-lib(etc jquery) is heavier too much
 window.onload = function(){
     // dynamic load style according to *theme* params
     let searchParams = new URLSearchParams(window.location.search);
