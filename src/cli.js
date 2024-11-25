@@ -1,41 +1,47 @@
 #!/usr/bin/env node
 "use strict";
 // node builtins
-const process = require('process'),
-  server = require('http').createServer(httpHandler),
-  exec = require('child_process').exec,
-  os = require('os'),
-  fs = require('fs'),
-  path = require('path'),
-  url = require('url');
+import process from 'process';
+import http from 'http'
+import child_process from 'child_process'
+import os from 'os';
+import fs from 'fs';
+import path from 'path';
+import url from 'url';
 
-const argv = require('minimist')(process.argv.slice(2), {
+const server = http.createServer(httpHandler);
+const exec = child_process.exec;
+
+// CLI argument parsing
+import minimist from 'minimist';
+const argv = minimist(process.argv.slice(2), {
   string: ['browser'],
   default: {port: 8090, debug: false, anchor: false, theme: false},
   alias: {V: 'version', h: 'help'},
 });
 
-const MarkdownIt = require('markdown-it'),
-  hljs = require('highlight.js'),
-  io = require('socket.io')(server, {
-    cors: {
-      origin: '*',
-      methods: [
-        "GET",
-        "PUT",
-        "DELETE"
-      ],
-      credentials: true
-    }
-  }),
-  send = require('send');
+import MarkdownIt from 'markdown-it';
+import hljs from 'highlight.js';
+import {Server} from 'socket.io';
+import taskLists from 'markdown-it-task-lists';
+import frontMatter from 'markdown-it-front-matter';
+import send from 'send';
 
-const mjpage = require('mathjax-node-page').mjpage;
-const taskLists = require('markdown-it-task-lists');
-const frontMatter = require('markdown-it-front-matter');
+const io = new Server(server, {
+      cors: {
+        origin: '*',
+        methods: [
+          "GET",
+          "PUT",
+          "DELETE"
+        ],
+        credentials: true
+      }
+    }
+);
 
 if (argv.version || argv.debug) {
-  const version= require('./version');
+  const version = require('./version');
   console.log(`instant-markdown-d version: v${version}`);
   console.log(`nodejs version: ${process.version}`);
 }
@@ -87,56 +93,93 @@ let md = new MarkdownIt({
   }
 }).use(taskLists, {enabled: true}).use(frontMatter, function(fm){});
 
-if (argv.mathjax) md.use(require('markdown-it-mathjax')());
+// if (argv.mathjax) md.use(require('markdown-it-mathjax')());
 if (argv.mermaid)  md.use(require('markdown-it-textual-uml'));
 
+argv.debug && console.debug("argv",argv);
+import anchor from 'markdown-it-anchor';
 if (argv.anchor) {
-  const anchor = require('markdown-it-anchor');
+  // const anchor = require('markdown-it-anchor').default;
   let anchorOpt = {
     tabIndex: false,
     permalink: anchor.permalink.ariaHidden({
       placement: 'after'
     })
   };
+  argv.debug && console.debug("markdown-it-anchor:", anchorOpt);
   md.use(anchor, anchorOpt);
 }
 
-const mjPageConfig = {
-  format: ["TeX"],
-  cssInline: false,
+// const mjPageConfig = {
+//   format: ["TeX"],
+//   cssInline: false,
+// };
+//
+// if (process.env.INSTANT_MARKDOWN_MATHJAX_FONTS) {
+//   mjPageConfig.fontURL = process.env.INSTANT_MARKDOWN_MATHJAX_FONTS;
+// }
+
+const mjConfig = {
+  output: "chtml",
+  // equationNumbers: "AMS",
+  // speakText: false
+  tex: {
+    processEnvironments: false,
+    tags: 'ams'
+  },
+  // chtml: {
+  //     // fontURL: argv.fontURL
+  // },
 };
 
-if (process.env.INSTANT_MARKDOWN_MATHJAX_FONTS) {
-  mjPageConfig.fontURL = process.env.INSTANT_MARKDOWN_MATHJAX_FONTS;
+import { createMathjaxInstance, mathjax } from "@mdit/plugin-mathjax";
+let mjCSS = undefined;
+
+if (argv.mathjax) {
+    const mathjaxInstance = createMathjaxInstance(mjConfig);
+    md.use(mathjax, mathjaxInstance);
+    const mjStyle = mathjaxInstance.outputStyle();
+    mjCSS = `<style>{mjStyle}</style>`
 }
 
-const mjNodeConfig = {
-  html: true,
-  // mml: true,
-  // svg: true,
-  equationNumbers: "AMS",
-  speakText: false
-};
+// if (argv.mathjax) {
+//   // const { createMathjaxInstance, mathjax } = require("@mdit/plugin-mathjax");
+//   var mjLoaded = import("@mdit/plugin-mathjax").then(
+//     (module) => {
+//       // var { createMathjaxInstance, mathjax } = module;
+//       const mathjaxInstance = module.createMathjaxInstance(mjConfig);
+//       md.use(module.mathjax, mathjaxInstance);
+//       mjStyle = mathjaxInstance.outputStyle();
+//     },
+//     () => {
+//       console.error("Could not import @mdit/plugin-mathjax")
+//     }
+//   )
+// }
 
 function mathJaxRenderEmit(newHtml) {
-  if(argv.mathjax) {
-    mjpage(
-      newHtml,
-      mjPageConfig,
-      mjNodeConfig,
-      function(data) {
-          if (argv.debug) {
-            console.log("Rendered html saved as debug.html")
-            // console.debug(data); // resulting HTML string
-            fs.writeFileSync('debug.html', data, 'utf-8'); // debug
-          }
-          io.emit('newContent', data);
-      }
-    );
-  }
-  else {
+  // if(argv.mathjax) {
+  //   mjpage(
+  //     newHtml,
+  //     mjPageConfig,
+  //     mjNodeConfig,
+  //     function(data) {
+  //         if (argv.debug) {
+  //           console.log("Rendered html saved as debug.html")
+  //           // console.debug(data); // resulting HTML string
+  //           fs.writeFileSync('debug.html', data, 'utf-8'); // debug
+  //         }
+  //         io.emit('newContent', data);
+  //     }
+  //   );
+  // }
+  // else {
+  // }
+
+  // mjLoaded.then(() =>
     io.emit('newContent', newHtml)
-  }
+  // );
+  // console.log(mjLoaded)
   if (argv.debug) {
     console.debug('Emitting new data');
     // console.debug(newHtml); // resulting HTML string
@@ -194,6 +237,10 @@ function addSecurityHeaders(req, res, isIndexFile) {
   if (argv.debug) console.debug(`Content-Security-Policy=${csp}`)
 }
 
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+
 function httpHandler(req, res) {
   if (argv.debug) console.debug("Received %s request", req.method);
 
@@ -204,6 +251,7 @@ function httpHandler(req, res) {
         // Example: /my-repo/raw/master/sub-dir/some.png
         let githubUrl = req.url.match(/\/[^\/]+\/raw\/[^\/]+\/(.+)/);
         let isIndexFile = /^\/(index\.html)?(\?|$)/.test(req.url);
+        const __dirname = dirname(fileURLToPath(import.meta.url));
         let pkgRoot = path.dirname(__dirname);
         let cwd = process.cwd();
 
